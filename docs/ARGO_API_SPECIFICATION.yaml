@@ -8,6 +8,10 @@ info:
     한국 미술계 구조 분석 엔진의 RESTful API입니다.
     모든 응답은 JSON-LD 형식 (Schema.org 표준)을 따릅니다.
     
+    **참조 문서:**
+    - `ARGO_DATA_SOURCE_APIS.md`: 외부 데이터 소스 API 명세서 (데이터 수집용)
+    - `ARGO_DATA_COLLECTION_METHODOLOGY.md`: 데이터 수집 방법론
+    
     **AI 모델 정보:**
     - 이상치 탐지 가설 생성: Gemini 3 Pro Preview (`gemini-3-pro-preview`)
     - 환경변수: `GEMINI_API_KEY` (로컬 `.env` 파일에서 주입)
@@ -17,6 +21,10 @@ info:
     - 리전: asia-northeast3 (서울)
     - 초기 도메인: https://artdrive1208-api-xxx.run.app/v1
     - 향후 커스텀 도메인: https://api.argo.art/v1
+    
+    **구분:**
+    - 이 문서: ARGO 백엔드가 제공하는 API (프론트엔드-백엔드 간 API)
+    - 데이터 소스 API: 외부에서 데이터를 수집하는 API (`ARGO_DATA_SOURCE_APIS.md` 참조)
   contact:
     name: ARGO Project Team
     email: support@argo.art

@@ -2,9 +2,10 @@
 ## Backend Development Specification for Antigravity IDE
 
 **작성일**: 2025-12-09  
-**버전**: 1.0  
+**최종 업데이트**: 2025-12-09  
+**버전**: 1.1  
 **프로젝트 ID**: artdrive1208  
-**상태**: 최종 확정  
+**상태**: 최종 확정 (프론트엔드 업데이트 반영)  
 **대상**: Antigravity IDE, 백엔드 개발자
 
 ---
@@ -15,6 +16,17 @@
 2. [문서 참조 관계](#2-문서-참조-관계)
 3. [Antigravity IDE 사용 가이드](#3-antigravity-ide-사용-가이드)
 4. [API 스키마 명시](#4-api-스키마-명시)
+   - 4.1 Artist 엔터티
+   - 4.2 Institution 엔터티
+   - 4.3 Exhibition 엔터티
+   - 4.4 Transaction 엔터티
+   - 4.5 Cluster 엔터티
+   - 4.6 Collaboration 엔터티 (관계 데이터)
+   - 4.7 Institution 엔터티 (관계 데이터)
+   - 4.8 Exhibition 엔터티 (관계 데이터)
+   - 4.9 Artwork 엔터티
+   - 4.10 NetworkGraph 엔터티
+   - 4.11 GalaxySnapshot 엔터티
 5. [ID 매핑 규칙](#5-id-매핑-규칙)
 6. [JSON-LD 형식 명시](#6-json-ld-형식-명시)
 7. [에러 응답 형식](#7-에러-응답-형식)
@@ -572,13 +584,13 @@ class Artist(BaseModel):
 }
 ```
 
-### 4.8 GalaxySnapshot 엔터티
+### 4.11 GalaxySnapshot 엔터티
 
 **참조 문서:**
 - OpenAPI: `ARGO_API_SPECIFICATION.yaml` → `components/schemas/GalaxySnapshot`
 - 프론트엔드 타입: `types/argo.ts` → `interface GalaxySnapshot`
 
-#### 4.8.1 필드 정의
+#### 4.11.1 필드 정의
 
 | 필드명 | Python 타입 | JSON 타입 | 필수 여부 | 범위/제약조건 | 예제 | 프론트엔드 매핑 |
 |--------|------------|-----------|----------|--------------|------|----------------|
@@ -687,18 +699,54 @@ ARGO 프로젝트의 커스텀 필드는 `argo:` 네임스페이스를 사용합
   "name": "작가 A",
   "argo:scores": {
     "argo:inst_score": 82,
-    "argo:acad_score": 68
+    "argo:acad_score": 68,
+    "argo:media_score": 75,
+    "argo:network_score": 71,
+    "argo:composite_score": 74.15
   },
   "argo:coordinates_3d": {
     "argo:x": 2.34,
     "argo:y": -1.23,
     "argo:z": 0.67,
     "argo:radius": 15
-  }
+  },
+  "collaborations": [
+    {
+      "artist_id": "artist_002",
+      "strength": 0.65
+    },
+    {
+      "artist_id": "artist_003",
+      "strength": 0.45
+    }
+  ],
+  "institutions": [
+    {
+      "institution_id": "inst_001",
+      "name": "국립현대미술관",
+      "type": "museum"
+    }
+  ],
+  "exhibitions": [
+    {
+      "exhibition_id": "exh_001",
+      "name": "한국 추상미술의 맥락",
+      "year": 2024
+    }
+  ]
 }
 ```
 
-### 6.3 JSON-LD 변환 미들웨어
+### 6.3 관계 데이터의 JSON-LD 표현
+
+관계 데이터(`collaborations`, `institutions`, `exhibitions`)는 JSON-LD 형식에서 일반 배열로 표현됩니다. 위의 6.2 섹션 예제를 참조하세요.
+
+**주의사항:**
+- 관계 데이터는 `argo:` 네임스페이스를 사용하지 않습니다.
+- 프론트엔드에서 직접 사용 가능한 형식으로 제공됩니다.
+- `collaborations` 배열의 `strength` 값이 0.3 미만인 경우 프론트엔드에서 연결선이 표시되지 않습니다.
+
+### 6.4 JSON-LD 변환 미들웨어
 
 FastAPI에서 JSON-LD 형식으로 변환하는 미들웨어 예제:
 
@@ -747,7 +795,7 @@ async def add_jsonld_context(request: Request, call_next):
     return response
 ```
 
-### 6.4 참조 문서
+### 6.5 참조 문서
 
 - `ARGO_TSD_Final.md` 섹션 3.3: 응답 스키마 (JSON-LD) 상세 설명
 - `ARGO_API_SPECIFICATION.yaml`: JSON-LD 예제 포함
@@ -952,10 +1000,16 @@ async def get_artists(token: dict = Depends(verify_token)):
 | `inst_score` | `inst_score` | `argo:inst_score` |
 | `coordinates_3d` | `coordinates_3d` | `argo:coordinates_3d` |
 | `structuralist_analysis` | `structuralist_analysis` | `argo:structuralist_analysis` |
+| `collaborators` | `collaborators` | `collaborators` (하위 호환성) |
+| `collaborations` | `collaborations` | `collaborations` |
+| `institutions` | `institutions` | `institutions` |
+| `exhibitions` | `exhibitions` | `exhibitions` |
 
 **주의사항:**
 - 프론트엔드에서 `alternativeName` (camelCase)를 사용하지만, 백엔드에서는 `alternateName` (JSON-LD 표준)을 사용합니다.
 - JSON 응답에서는 JSON-LD 표준 필드명을 사용합니다 (`alternateName`).
+- **관계 데이터**: `collaborations`, `institutions`, `exhibitions`는 배열 형태로 제공되며, 프론트엔드에서 연결선 시각화에 사용됩니다.
+- **하위 호환성**: `collaborators` 배열도 지원하되, `collaborations` 배열을 우선 사용합니다.
 
 #### 9.1.2 타입 매핑 테이블
 
@@ -980,6 +1034,12 @@ async def get_artists(token: dict = Depends(verify_token)):
 - 백엔드 JSON 응답: `argo:coordinates_3d: { argo:x: 2.34, argo:y: -1.23, ... }`
 - 프론트엔드 타입: `coordinates_3d: { x: number, y: number, ... }`
 - 변환: 프론트엔드에서 `argo:` 네임스페이스 제거
+
+**관계 데이터 필드:**
+- 백엔드 JSON 응답: `collaborations: [{ artist_id: "artist_002", strength: 0.65 }, ...]`
+- 프론트엔드 타입: `collaborations?: Collaboration[]` (Collaboration 인터페이스 사용)
+- 변환: 프론트엔드에서 직접 사용 가능 (네임스페이스 변환 불필요)
+- 필터링: 프론트엔드에서 `strength >= 0.3` 조건으로 연결선 표시
 
 ### 9.2 타입 검증 방법
 
@@ -1204,6 +1264,11 @@ class Artist(BaseModel):
 - [ ] 모든 Artist 응답에 `coordinates_3d` 필드가 포함되어 있는가?
 - [ ] 좌표 값이 올바른 범위 내에 있는가? (x, y, z: -30 ~ 30)
 - [ ] radius 값이 올바르게 계산되었는가? (10 + network_score / 5)
+- [ ] 관계 데이터 필드가 올바른 형식인가?
+  - [ ] `collaborations` 배열의 각 항목에 `artist_id`와 `strength` 필드가 있는가?
+  - [ ] `strength` 값이 0-1 범위 내에 있는가?
+  - [ ] `institutions` 배열의 각 항목에 `institution_id`와 `name` 필드가 있는가?
+  - [ ] `exhibitions` 배열의 각 항목에 `exhibition_id`와 `name` 필드가 있는가?
 
 ### 11.6 CORS 검증 테스트
 
@@ -1279,6 +1344,8 @@ def test_cors_headers():
 - [ ] JSON-LD 변환 미들웨어를 구현했는가?
 - [ ] CORS 설정을 추가했는가?
 - [ ] 좌표 계산 로직을 구현했는가?
+- [ ] 관계 데이터 필드(`collaborations`, `institutions`, `exhibitions`)를 구현했는가?
+- [ ] `collaborations` 배열의 `strength` 값이 0-1 범위인지 확인했는가?
 
 ### 배포 전 확인사항
 
@@ -1288,6 +1355,11 @@ def test_cors_headers():
 - [ ] ID 매핑이 올바른가?
 - [ ] 에러 응답이 표준 형식을 따르는가?
 - [ ] 성능 목표를 달성했는가?
+- [ ] 관계 데이터 필드가 올바르게 제공되는가?
+  - [ ] `collaborations` 배열이 올바른 형식인가?
+  - [ ] `institutions` 배열이 올바른 형식인가?
+  - [ ] `exhibitions` 배열이 올바른 형식인가?
+- [ ] 프론트엔드 연결선 시각화가 정상 작동하는가? (`strength >= 0.3` 필터링)
 
 ---
 
@@ -1301,8 +1373,23 @@ def test_cors_headers():
 
 ---
 
-**문서 버전**: 1.0  
+**문서 버전**: 1.1  
 **최종 업데이트**: 2025-12-09  
 **작성자**: ARGO 개발팀  
-**검토 상태**: 최종 확정
+**검토 상태**: 최종 확정 (프론트엔드 업데이트 반영 완료)
+
+---
+
+## 변경 이력
+
+### 버전 1.1 (2025-12-09)
+- **프론트엔드 업데이트 반영**:
+  - Artist 엔터티에 관계 데이터 필드 추가 (`collaborations`, `institutions`, `exhibitions`)
+  - Collaboration, Institution, Exhibition 엔터티 타입 정의 추가
+  - 관계 데이터 필터링 조건 명시 (`strength >= 0.3`)
+  - 하위 호환성 유지 (`collaborators` 배열 지원)
+  - 타입 매핑 테이블 및 검증 체크리스트 업데이트
+
+### 버전 1.0 (2025-12-09)
+- 초기 문서 작성
 

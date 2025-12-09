@@ -1,0 +1,262 @@
+[
+  {
+    "name": "강경구",
+    "name_ko": "강경구",
+    "alternateName": "Kang kyung koo",
+    "genre": "회화",
+    "source": "ARKO",
+    "data_source": [
+      "ARKO"
+    ],
+    "confidence_score": 0.95,
+    "collected_at": "2025-12-09T05:41:07.154362Z",
+    "name_en": "Kang kyung koo",
+    "segment_id": "contemporary_painting_KR",
+    "artist_id": "arko_0001",
+    "id": "argo://artist/arko_0001",
+    "identifier": {
+      "@type": "PropertyValue",
+      "value": "arko_0001"
+    },
+    "inst_score": 0,
+    "acad_score": 0,
+    "media_score": 0.0,
+    "network_score": 0.0,
+    "composite_score": 0.0,
+    "composite_confidence": 0.81
+  },
+  {
+    "name": "강관욱",
+    "name_ko": "강관욱",
+    "alternateName": "Kang kwan wook",
+    "genre": "조각",
+    "source": "ARKO",
+    "data_source": [
+      "ARKO"
+    ],
+    "confidence_score": 0.95,
+    "collected_at": "2025-12-09T05:41:07.154489Z",
+    "name_en": "Kang kwan wook",
+    "segment_id": "sculpture_KR",
+    "artist_id": "arko_0002",
+    "id": "argo://artist/arko_0002",
+    "identifier": {
+      "@type": "PropertyValue",
+      "value": "arko_0002"
+    },
+    "inst_score": 0,
+    "acad_score": 0,
+    "media_score": 0.0,
+    "network_score": 0.0,
+    "composite_score": 0.0,
+    "composite_confidence": 0.81
+  },
+  {
+    "name": "강광",
+    "name_ko": "강광",
+    "alternateName": "Kang kwang",
+    "genre": "회화",
+    "source": "ARKO",
+    "data_source": [
+      "ARKO"
+    ],
+    "confidence_score": 0.95,
+    "collected_at": "2025-12-09T05:41:07.154520Z",
+    "name_en": "Kang kwang",
+    "segment_id": "contemporary_painting_KR",
+    "artist_id": "arko_0003",
+    "id": "argo://artist/arko_0003",
+    "identifier": {
+      "@type": "PropertyValue",
+      "value": "arko_0003"
+    },
+    "inst_score": 0,
+    "acad_score": 0,
+    "media_score": 0.0,
+    "network_score": 0.0,
+    "composite_score": 0.0,
+    "composite_confidence": 0.81
+  },
+  {
+    "name": "강남미",
+    "name_ko": "강남미",
+    "alternateName": "Kang nam mi",
+    "genre": "미술작가",
+    "source": "ARKO",
+    "data_source": [
+      "ARKO"
+    ],
+    "confidence_score": 0.95,
+    "collected_at": "2025-12-09T05:41:07.154601Z",
+    "name_en": "Kang nam mi",
+    "segment_id": "contemporary_KR",
+    "artist_id": "arko_0004",
+    "id": "argo://artist/arko_0004",
+    "identifier": {
+      "@type": "PropertyValue",
+      "value": "arko_0004"
+    },
+    "inst_score": 0,
+    "acad_score": 0,
+    "media_score": 0.0,
+    "network_score": 0.0,
+    "composite_score": 0.0,
+    "composite_confidence": 0.81
+  },
+  {
+    "name": "강미영",
+    "name_ko": "강미영",
+    "alternateName": "kang mi young",
+    "genre": "시각기타",
+    "source": "ARKO",
+    "data_source": [
+      "ARKO"
+    ],
+    "confidence_score": 0.95,
+    "collected_at": "2025-12-09T05:41:07.154645Z",
+    "name_en": "kang mi young",
+    "segment_id": "contemporary_KR",
+    "artist_id": "arko_0005",
+    "id": "argo://artist/arko_0005",
+    "identifier": {
+      "@type": "PropertyValue",
+      "value": "arko_0005"
+    },
+    "inst_score": 0,
+    "acad_score": 0,
+    "media_score": 0.0,
+    "network_score": 0.0,
+    "composite_score": 0.0,
+    "composite_confidence": 0.81
+  },
+  {
+    "name": "강봉규",
+    "name_ko": "강봉규",
+    "alternateName": "Kang bong kyu",
+    "genre": "미술작가",
+    "source": "ARKO",
+    "data_source": [
+      "ARKO"
+    ],
+    "confidence_score": 0.95,
+    "collected_at": "2025-12-09T05:41:07.154661Z",
+    "name_en": "Kang bong kyu",
+    "segment_id": "contemporary_KR",
+    "artist_id": "arko_0006",
+    "id": "argo://artist/arko_0006",
+    "identifier": {
+      "@type": "PropertyValue",
+      "value": "arko_0006"
+    },
+    "inst_score": 0,
+    "acad_score": 0,
+    "media_score": 0.0,
+    "network_score": 0.0,
+    "composite_score": 0.0,
+    "composite_confidence": 0.81
+  },
+  {
+    "name": "강석영",
+    "name_ko": "강석영",
+    "alternateName": "Kang suk young",
+    "genre": "미술작가",
+    "source": "ARKO",
+    "data_source": [
+      "ARKO"
+    ],
+    "confidence_score": 0.95,
+    "collected_at": "2025-12-09T05:41:07.154674Z",
+    "name_en": "Kang suk young",
+    "segment_id": "contemporary_KR",
+    "artist_id": "arko_0007",
+    "id": "argo://artist/arko_0007",
+    "identifier": {
+      "@type": "PropertyValue",
+      "value": "arko_0007"
+    },
+    "inst_score": 0,
+    "acad_score": 0,
+    "media_score": 0.0,
+    "network_score": 0.0,
+    "composite_score": 0.0,
+    "composite_confidence": 0.81
+  },
+  {
+    "name": "강성원",
+    "name_ko": "강성원",
+    "alternateName": "Kang seong won",
+    "genre": "미술작가",
+    "source": "ARKO",
+    "data_source": [
+      "ARKO"
+    ],
+    "confidence_score": 0.95,
+    "collected_at": "2025-12-09T05:41:07.154686Z",
+    "name_en": "Kang seong won",
+    "segment_id": "contemporary_KR",
+    "artist_id": "arko_0008",
+    "id": "argo://artist/arko_0008",
+    "identifier": {
+      "@type": "PropertyValue",
+      "value": "arko_0008"
+    },
+    "inst_score": 0,
+    "acad_score": 0,
+    "media_score": 0.0,
+    "network_score": 0.0,
+    "composite_score": 0.0,
+    "composite_confidence": 0.81
+  },
+  {
+    "name": "강애란",
+    "name_ko": "강애란",
+    "alternateName": "Kang ai ran",
+    "genre": "미술작가",
+    "source": "ARKO",
+    "data_source": [
+      "ARKO"
+    ],
+    "confidence_score": 0.95,
+    "collected_at": "2025-12-09T05:41:07.154698Z",
+    "name_en": "Kang ai ran",
+    "segment_id": "contemporary_KR",
+    "artist_id": "arko_0009",
+    "id": "argo://artist/arko_0009",
+    "identifier": {
+      "@type": "PropertyValue",
+      "value": "arko_0009"
+    },
+    "inst_score": 0,
+    "acad_score": 0,
+    "media_score": 0.0,
+    "network_score": 0.0,
+    "composite_score": 0.0,
+    "composite_confidence": 0.81
+  },
+  {
+    "name": "강연균",
+    "name_ko": "강연균",
+    "alternateName": "Kang yeon gyun",
+    "genre": "미술작가",
+    "source": "ARKO",
+    "data_source": [
+      "ARKO"
+    ],
+    "confidence_score": 0.95,
+    "collected_at": "2025-12-09T05:41:07.154709Z",
+    "name_en": "Kang yeon gyun",
+    "segment_id": "contemporary_KR",
+    "artist_id": "arko_0010",
+    "id": "argo://artist/arko_0010",
+    "identifier": {
+      "@type": "PropertyValue",
+      "value": "arko_0010"
+    },
+    "inst_score": 0,
+    "acad_score": 0,
+    "media_score": 0.0,
+    "network_score": 0.0,
+    "composite_score": 0.0,
+    "composite_confidence": 0.81
+  }
+]
