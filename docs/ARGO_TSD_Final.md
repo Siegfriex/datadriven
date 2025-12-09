@@ -21,6 +21,28 @@
 
 ---
 
+## GCP 프로젝트 정보
+
+**프로젝트 이름**: ARTDRIVE  
+**프로젝트 ID**: artdrive1208  
+**리전**: asia-northeast3 (서울)
+
+### Firebase 설정
+- **API Key**: AIzaSyC4XxekCt6Ob1ufyuRucrHMqXvEInkCpsg
+- **Auth Domain**: artdrive1208.firebaseapp.com
+- **Project ID**: artdrive1208
+- **Storage Bucket**: artdrive1208.firebasestorage.app
+- **Messaging Sender ID**: 55248184822
+- **App ID**: 1:55248184822:web:cef02018a4af9dbbdd93d7
+- **Measurement ID**: G-DJ2C6DBJ2Q
+
+### 초기 도메인
+- **프론트엔드**: https://artdrive1208.web.app
+- **백엔드 API**: https://artdrive1208-api-xxx.run.app (Cloud Run 자동 생성)
+- **향후 커스텀 도메인**: argo.art, api.argo.art (추가 예정)
+
+---
+
 ## 1. 아키텍처 개요
 
 ### 1.1 3계층 통합 아키텍처
@@ -877,7 +899,9 @@ metadata: {
 ### 3.1 API 설계
 
 ```
-Base URL: https://api.argo.art/v1
+Base URL: https://artdrive1208-api-xxx.run.app/v1
+(초기: Cloud Run 자동 생성 도메인)
+(향후: https://api.argo.art/v1 - 커스텀 도메인 추가 예정)
 
 인증: JWT Token (Authorization: Bearer <token>)
 응답 형식: JSON-LD (Schema.org 표준)
@@ -1129,7 +1153,8 @@ GET /api/search
 
 ```
 URL 기반 버전 관리:
-├─ Base URL: https://api.argo.art/v1
+├─ Base URL: https://artdrive1208-api-xxx.run.app/v1 (초기)
+├─ 향후 커스텀 도메인: https://api.argo.art/v1
 ├─ 버전 형식: v{Major}.{Minor}
 └─ 예: /v1/artists, /v2/artists
 
@@ -1408,29 +1433,34 @@ const useGalaxy = () => {
 
 ```
 ┌─────────────────────────────────────────────┐
-│           CDN (Cloudflare)                  │
-│  (정적 자산 캐싱, DDoS 보호)                 │
+│   Firebase Hosting (프론트엔드)              │
+│   • React + Vite 빌드                        │
+│   • Cloud CDN 자동 포함                      │
+│   • 자동 HTTPS                               │
+│   • 리전: 글로벌 엣지 네트워크              │
 └─────────────────────────────────────────────┘
                     ↓
 ┌─────────────────────────────────────────────┐
-│    Vercel / Railway (프론트엔드)             │
-│    • Vite 빌드 자동 배포                    │
-│    • 자동 HTTPS                             │
-│    • Edge 캐싱                              │
+│   Cloud Run (백엔드 API)                    │
+│   • FastAPI + Python 3.10                   │
+│   • 서버리스 자동 스케일링                    │
+│   • 사용량 기반 과금                         │
+│   • 리전: asia-northeast3 (서울)            │
 └─────────────────────────────────────────────┘
                     ↓
 ┌─────────────────────────────────────────────┐
-│    Railway / Heroku (백엔드 API)            │
-│    • FastAPI + Python 3.10                  │
-│    • 자동 스케일링                          │
-│    • 환경 변수 관리                         │
+│   Cloud Memorystore (Redis 캐싱)             │
+│   • API 응답 캐싱                            │
+│   • TTL 관리                                 │
+│   • 리전: asia-northeast3 (서울)            │
 └─────────────────────────────────────────────┘
                     ↓
 ┌─────────────────────────────────────────────┐
-│    Neo4j Aura (클라우드 데이터베이스)        │
-│    • 99.9% SLA 보장                         │
-│    • 자동 백업                              │
-│    • 쿼리 성능 모니터링                     │
+│   Neo4j Aura (데이터베이스)                  │
+│   • 외부 서비스 (GCP 외부)                   │
+│   • 연결만 관리                              │
+│   • 99.9% SLA 보장                           │
+│   • 자동 백업                                │
 └─────────────────────────────────────────────┘
 ```
 
@@ -1439,15 +1469,19 @@ const useGalaxy = () => {
 ```
 GitHub Push
     ↓
-GitHub Actions (CI/CD)
+GitHub Actions (CI/CD) 또는 Cloud Build
 ├─ 테스트 실행 (Jest, Pytest)
 ├─ 빌드 (Vite, Python packaging)
 ├─ 린트 (ESLint, Pylint)
-└─ 배포 (Vercel, Railway)
+└─ 배포
+    ├─ Firebase Hosting (프론트엔드)
+    └─ Cloud Run (백엔드)
     ↓
 Production 환경
-├─ 프론트엔드: argo.art (Vercel)
-├─ 백엔드: api.argo.art (Railway)
+├─ 프론트엔드: artdrive1208.web.app (Firebase Hosting)
+│  └─ 향후: argo.art (커스텀 도메인)
+├─ 백엔드: artdrive1208-api-xxx.run.app (Cloud Run)
+│  └─ 향후: api.argo.art (커스텀 도메인)
 └─ 데이터베이스: Neo4j Aura (AuraDB)
 ```
 
@@ -1472,8 +1506,8 @@ Production 환경
 └─ 정확도: 신뢰도 점수 > 0.85
 
 캐시 전략 (강화):
-├─ CDN: 정적 자산 (JS, CSS, 이미지)
-├─ Redis: API 응답 (TTL: 1시간)
+├─ Cloud CDN: 정적 자산 (JS, CSS, 이미지) - Firebase Hosting 자동 포함
+├─ Cloud Memorystore (Redis 호환): API 응답 (TTL: 1시간)
 │  ├─ 일반 API 응답: TTL 1시간
 │  ├─ 구조주의 분석 결과: TTL 24시간 (변경 빈도 낮음)
 │  ├─ 갤럭시 스냅샷: TTL 1주일 (주 1회 업데이트)
@@ -1754,8 +1788,8 @@ BRD 요구사항 → PRD 기능 → TSD 구현
    └─ 로그 분석 (에러 원인 파악)
 
 2. 복구 실행 (10-30분)
-   ├─ 새 인스턴스 자동 생성 (Railway/Heroku)
-   ├─ 환경 변수 복원
+   ├─ 새 인스턴스 자동 생성 (Cloud Run)
+   ├─ 환경 변수 복원 (Secret Manager 또는 환경 변수)
    ├─ 의존성 확인 (Neo4j 연결)
    └─ Health check 통과 확인
 
@@ -1771,7 +1805,7 @@ BRD 요구사항 → PRD 기능 → TSD 구현
 
 폴백 전략:
 ├─ Circuit Breaker: Neo4j 실패 시 캐시 반환
-├─ CDN 캐싱: 정적 자산은 영향 없음
+├─ Cloud CDN 캐싱: 정적 자산은 영향 없음 (Firebase Hosting 자동 포함)
 └─ 읽기 전용 모드: 쓰기 기능 일시 중단 가능
 ```
 
@@ -1946,5 +1980,31 @@ BRD 비즈니스 목표
 **Version Control**:
 - v1.0 (2025-12-08): 초안
 - v2.0 (2025-12-08): BRD+PRD 완벽 동기화
-- v2.1 (예정): 보드 검토 후 수정
+- v2.1 (2025-12-08): GCP 인프라 구성으로 전면 업데이트
+- v2.2 (2025-12-08): 프론트엔드 구현 상태 반영
 - v3.0 (예정): 최종 승인 버전
+
+---
+
+## 구현 상태 (Implementation Status)
+
+**Last Updated**: 2025-12-08
+
+### 프론트엔드 계층
+- ✅ React 18 + TypeScript + Vite 설정 완료
+- ✅ Three.js r181 + React Three Fiber 통합 완료
+- ✅ 기본 컴포넌트 구조 완성
+  - GalaxyScene.tsx
+  - ArtistParticles.tsx (InstancedMesh)
+  - GalaxyControls.tsx
+  - LeftPanel.tsx, RightPanel.tsx
+- ✅ 상태 관리 구조 완성 (useGalaxy, AppContext)
+- ✅ 프로젝트 구조 정리 완료 (쉐이더 관련 파일 제거)
+
+### 백엔드 계층
+- ⏳ FastAPI 구조 설계 예정
+- ⏳ Neo4j Aura Cloud 연동 예정
+
+### 데이터베이스 계층
+- ⏳ Neo4j 초기화 예정
+- ✅ 데이터 스키마 정의 완료 (types/argo.ts)

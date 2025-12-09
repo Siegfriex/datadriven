@@ -1,10 +1,11 @@
 # ARGO: 한국 미술계 구조 분석 엔진
 ## Product Requirements Document (PRD)
 
-**Version**: 1.0  
+**Version**: 1.1  
 **Last Updated**: 2025-12-08  
 **Status**: Ready for Development  
-**Author**: Project ARGO Team
+**Author**: Project ARGO Team  
+**Update**: GCP 인프라 구성으로 전면 업데이트
 
 ---
 
@@ -17,6 +18,28 @@
 - **3D 갤럭시 모델**: 한국 미술계를 입자 시스템으로 시각화
 - **패턴 탐지**: 보이지 않는 제도, 권력 구조, 이상치 자동 식별
 - **데이터 기반 가설**: LLM + 통계 검증으로 학문적 엄밀성 확보
+
+---
+
+## GCP 프로젝트 정보
+
+**프로젝트 이름**: ARTDRIVE  
+**프로젝트 ID**: artdrive1208  
+**리전**: asia-northeast3 (서울)
+
+### Firebase 설정
+- **API Key**: AIzaSyC4XxekCt6Ob1ufyuRucrHMqXvEInkCpsg
+- **Auth Domain**: artdrive1208.firebaseapp.com
+- **Project ID**: artdrive1208
+- **Storage Bucket**: artdrive1208.firebasestorage.app
+- **Messaging Sender ID**: 55248184822
+- **App ID**: 1:55248184822:web:cef02018a4af9dbbdd93d7
+- **Measurement ID**: G-DJ2C6DBJ2Q
+
+### 초기 도메인
+- **프론트엔드**: https://artdrive1208.web.app
+- **백엔드 API**: https://artdrive1208-api-xxx.run.app (Cloud Run 자동 생성)
+- **향후 커스텀 도메인**: argo.art, api.argo.art (추가 예정)
 
 ---
 
@@ -1147,7 +1170,9 @@ PCA 좌표 매핑:
 언어: Python 3.10+
 프레임워크: FastAPI
 데이터베이스: Neo4j (Aura)
-캐시: Redis (선택)
+캐시: Cloud Memorystore (Redis 호환, GCP)
+배포: Cloud Run (GCP)
+리전: asia-northeast3 (서울)
 
 API 엔드포인트:
 GET /api/artists
@@ -1167,6 +1192,8 @@ GET /api/search
 3D 렌더링: Three.js r158+
 상태 관리: React Hooks
 스타일: Tailwind CSS
+배포: Firebase Hosting (GCP)
+리전: 글로벌 엣지 네트워크
 
 컴포넌트:
 ├─ Galaxy3D (Three.js 렌더러)
@@ -1275,7 +1302,7 @@ Warning 알림:
 | **W5~W6** | 데이터 정규화 완료, 점수 계산 | Data + Backend | confidence > 0.85 | 정규화된 데이터 + 점수 |
 | **W7** | Galaxy3D 완성, 필터 구현 | Frontend | 60 FPS | 완성된 갤럭시 시각화 |
 | **W8** | 분석 API 기본 구현 (중심성) | Backend | centrality API | 분석 엔드포인트 |
-| **W9** | MVP 배포, 초기 사용자 모집 | DevOps | 100명 | 프로덕션 배포 |
+| **W9** | MVP 배포, 초기 사용자 모집 | DevOps | 100명 | Firebase Hosting + Cloud Run 배포 |
 | **W10** | 논문 1편 제출 | Research | KCI 등재지 | 학술 논문 제출 |
 | **W11** | 정부 기관 미팅 | Business | 제안서 제출 | 정부 계약 제안 |
 | **W12** | 버그 수정, 성능 최적화 | QA + Eng | KPI 달성 | 안정화된 MVP |
@@ -1359,8 +1386,10 @@ Warning 알림:
 ```
 라이선스: CC BY 4.0 (데이터) + MIT (코드)
 GitHub: github.com/argo-art-analytics
-문서: https://argo.art/docs
-API: https://api.argo.art
+문서: https://artdrive1208.web.app/docs (초기)
+     향후: https://argo.art/docs (커스텀 도메인 추가 예정)
+API: https://artdrive1208-api-xxx.run.app (초기)
+     향후: https://api.argo.art (커스텀 도메인 추가 예정)
 
 오픈소스 기여도 환영:
 - 데이터 크리닝
@@ -1537,10 +1566,38 @@ API: https://api.argo.art
 
 **Next Steps:**
 1. ✅ 이 PRD 승인
-2. ⏳ Antigravity에서 Neo4j 초기화 (1–2일)
-3. ⏳ Cursor에서 백엔드/프론트엔드 구현 (7–10일)
-4. ⏳ 테스트 & 배포 (2–3일)
-5. ⏳ 공개 (2026년 1월 중)
+2. ✅ 프론트엔드 기본 구조 구현 완료 (2025-12-08)
+3. ✅ 3D 갤럭시 시각화 기본 구현 완료
+4. ⏳ Antigravity에서 Neo4j 초기화 (1–2일)
+5. ⏳ 백엔드 API 구현 (7–10일)
+6. ⏳ 테스트 & 배포 (2–3일)
+7. ⏳ 공개 (2026년 1월 중)
+
+---
+
+## 구현 상태 (Implementation Status)
+
+**Last Updated**: 2025-12-08
+
+### 완료된 기능
+- ✅ 3D 갤럭시 시각화 기본 구조 (GalaxyScene, ArtistParticles)
+- ✅ InstancedMesh 기반 입자 시스템 구현
+- ✅ 카메라 제어 시스템 (GalaxyControls)
+- ✅ 미니멀 패널 UI (LeftPanel, RightPanel)
+- ✅ 기본 상호작용 (호버, 클릭)
+- ✅ 전체화면 캔버스 구현
+- ✅ 쉐이더 관련 파일 정리 완료
+- ✅ 프로젝트 구조 ARGO 전용으로 정리 완료
+
+### 진행 중
+- ⚠️ 디자인 디테일 및 UX 개선
+- ⚠️ 필터 동적 업데이트 기능
+- ⚠️ 연결선 시각화
+
+### 예정
+- ⏳ 백엔드 API 연동
+- ⏳ 실시간 데이터 연동
+- ⏳ 추가 분석 기능
 
 **Questions? Feedback?**
 프로젝트 논의, 데이터 요청, 기술 상담 → [연락처]

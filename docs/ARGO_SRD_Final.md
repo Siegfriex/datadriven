@@ -24,6 +24,28 @@
 
 ---
 
+## GCP 프로젝트 정보
+
+**프로젝트 이름**: ARTDRIVE  
+**프로젝트 ID**: artdrive1208  
+**리전**: asia-northeast3 (서울)
+
+### Firebase 설정
+- **API Key**: AIzaSyC4XxekCt6Ob1ufyuRucrHMqXvEInkCpsg
+- **Auth Domain**: artdrive1208.firebaseapp.com
+- **Project ID**: artdrive1208
+- **Storage Bucket**: artdrive1208.firebasestorage.app
+- **Messaging Sender ID**: 55248184822
+- **App ID**: 1:55248184822:web:cef02018a4af9dbbdd93d7
+- **Measurement ID**: G-DJ2C6DBJ2Q
+
+### 초기 도메인
+- **프론트엔드**: https://artdrive1208.web.app
+- **백엔드 API**: https://artdrive1208-api-xxx.run.app (Cloud Run 자동 생성)
+- **향후 커스텀 도메인**: argo.art, api.argo.art (추가 예정)
+
+---
+
 ## 1. 핵심 기능 정의
 
 ### 1.1 5가지 핵심 기능 분류
@@ -1386,7 +1408,8 @@ POST /api/anomalies/analyze
     "details": "상세 기술 정보 (개발자용)",
     "timestamp": "2025-12-08T18:30:00Z",
     "request_id": "req_123456789",
-    "documentation": "https://api.argo.art/docs/errors/ERROR_CODE"
+    "documentation": "https://artdrive1208-api-xxx.run.app/docs/errors/ERROR_CODE"
+    (향후: https://api.argo.art/docs/errors/ERROR_CODE - 커스텀 도메인 추가 예정)
   }
 }
 ```
@@ -1849,7 +1872,7 @@ API 키 관리:
 | **W5~W6** | 데이터 정규화 완료, 점수 계산 | Data + Backend | confidence > 0.85 |
 | **W7** | Galaxy3D 완성, 필터 구현 | Frontend | 60 FPS |
 | **W8** | 분석 API 기본 구현 (중심성) | Backend | centrality API |
-| **W9** | MVP 배포, 초기 사용자 모집 | DevOps | 100명 |
+| **W9** | MVP 배포, 초기 사용자 모집 | DevOps | 100명 | Firebase Hosting + Cloud Run 배포 |
 | **W10** | 논문 1편 제출 | Research | KCI 등재지 |
 | **W11** | 정부 기관 미팅 | Business | 제안서 제출 |
 | **W12** | 버그 수정, 성능 최적화 | QA + Eng | KPI 달성 |
@@ -1909,7 +1932,8 @@ Builder: Vite 4.0+
 상태관리: React Hooks + Context API
 스타일: Tailwind CSS
 테스트: Jest + React Testing Library
-배포: Vercel
+배포: Firebase Hosting (GCP)
+리전: 글로벌 엣지 네트워크
 ```
 
 ### 8.2 Backend
@@ -1920,10 +1944,11 @@ Framework: FastAPI 0.100+
 데이터베이스: Neo4j Aura
 ORM: py2neo
 API 문서: Swagger/OpenAPI 3.0
-캐싱: Redis
+캐싱: Cloud Memorystore (Redis 호환, GCP)
 인증: JWT
 테스트: Pytest
-배포: Railway / Heroku
+배포: Cloud Run (GCP)
+리전: asia-northeast3 (서울)
 ```
 
 ### 8.3 데이터 & ML
@@ -2035,7 +2060,7 @@ Info 알림 (일일 요약):
 
 #### 8.4.4 자동 스케일링 정책
 
-**백엔드 API (Railway/Heroku):**
+**백엔드 API (Cloud Run):**
 
 ```
 스케일 업 트리거:
@@ -2050,9 +2075,10 @@ Info 알림 (일일 요약):
 └─ 동시 요청 수 < 10개
 
 스케일링 범위:
-├─ 최소 인스턴스: 1개
-├─ 최대 인스턴스: 5개 (Year 1)
-└─ 인스턴스 타입: Standard-1X (1GB RAM)
+├─ 최소 인스턴스: 0개 (서버리스, 요청 없으면 0)
+├─ 최대 인스턴스: 10개 (Year 1)
+└─ 인스턴스 타입: 1 vCPU, 512MB RAM (기본)
+   └─ 필요시 2 vCPU, 2GB RAM으로 확장 가능
 ```
 
 **Neo4j Aura (클라우드):**
@@ -2210,8 +2236,8 @@ Feature 1 + 2 (MVP):
    └─ 로그 분석 (에러 원인 파악)
 
 2. 복구 실행 (10-30분)
-   ├─ 새 인스턴스 자동 생성 (Railway/Heroku)
-   ├─ 환경 변수 복원
+   ├─ 새 인스턴스 자동 생성 (Cloud Run)
+   ├─ 환경 변수 복원 (Secret Manager 또는 환경 변수)
    ├─ 의존성 확인 (Neo4j 연결)
    └─ Health check 통과 확인
 
@@ -2387,14 +2413,42 @@ KPI 달성 → 비즈니스 목표 달성
 **다음 단계**:
 
 1. ✅ 모든 문서 (BRD, PRD, TSD, SRD) 승인
-2. ⏳ Antigravity에서 Neo4j 초기화
-3. ⏳ Cursor에서 Backend 개발 시작
-4. ⏳ Google AI Studio에서 Frontend 코드 생성
-5. ⏳ 100명 데이터 수집 & 정규화 병행
-6. ⏳ Month 3 MVP 배포
+2. ✅ Frontend 기본 구조 구현 완료 (2025-12-08)
+3. ✅ 3D 갤럭시 시각화 기본 구현 완료
+4. ⏳ Antigravity에서 Neo4j 초기화
+5. ⏳ Cursor에서 Backend 개발 시작
+6. ⏳ 100명 데이터 수집 & 정규화 병행
+7. ⏳ Month 3 MVP 배포
+
+---
+
+## 구현 상태 (Implementation Status)
+
+**Last Updated**: 2025-12-08
+
+### Feature 1: 3D 갤럭시 시각화 (F1)
+- ✅ 기본 렌더링 엔진 설정 (Three.js r181)
+- ✅ InstancedMesh 기반 입자 시스템 구현
+- ✅ 데이터 기반 색상 매핑 구현
+- ✅ 카메라 제어 시스템 구현
+- ✅ 기본 호버/클릭 상호작용 구현
+- ⚠️ LOD 최적화 필요
+- ⚠️ 연결선 시각화 필요
+
+### Feature 2: 미술가 데이터 관리 (F2)
+- ✅ Mock 데이터 구조 완성 (100명)
+- ✅ TypeScript 타입 정의 완료
+- ⏳ 백엔드 API 연동 예정
+- ⏳ Neo4j 데이터베이스 연동 예정
+
+### Feature 3-5: 기타 기능
+- ⏳ 분석 대시보드 (Phase 2)
+- ⏳ 이상치 탐지 (Phase 2)
+- ⏳ 공개 API (Phase 2)
 
 ---
 
 **Document Owner**: Engineering & Product Team  
 **Last Updated**: 2025-12-08  
+**Version**: 1.1 (GCP 인프라 구성으로 업데이트)  
 **Next Review**: 2025-12-15 (Phase 1 Kick-off Meeting)

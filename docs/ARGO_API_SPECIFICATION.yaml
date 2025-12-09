@@ -1,0 +1,2107 @@
+openapi: 3.0.3
+info:
+  title: ARGO API
+  version: 1.0.0
+  description: |
+    ARGO (Art-world Real-time Galaxy Observatory) API 명세서
+    
+    한국 미술계 구조 분석 엔진의 RESTful API입니다.
+    모든 응답은 JSON-LD 형식 (Schema.org 표준)을 따릅니다.
+    
+    **AI 모델 정보:**
+    - 이상치 탐지 가설 생성: Gemini 3 Pro Preview (`gemini-3-pro-preview`)
+    - 환경변수: `GEMINI_API_KEY` (로컬 `.env` 파일에서 주입)
+    
+    **프로젝트 정보:**
+    - 프로젝트 ID: artdrive1208
+    - 리전: asia-northeast3 (서울)
+    - 초기 도메인: https://artdrive1208-api-xxx.run.app/v1
+    - 향후 커스텀 도메인: https://api.argo.art/v1
+  contact:
+    name: ARGO Project Team
+    email: support@argo.art
+  license:
+    name: Proprietary
+    url: https://argo.art/license
+
+servers:
+  - url: https://artdrive1208-api-xxx.run.app/v1
+    description: 초기 Cloud Run 도메인
+  - url: https://api.argo.art/v1
+    description: 향후 커스텀 도메인 (예정)
+
+tags:
+  - name: Artists
+    description: 작가 관련 API
+  - name: Institutions
+    description: 기관 관련 API
+  - name: Exhibitions
+    description: 전시 관련 API
+  - name: Transactions
+    description: 거래 관련 API
+  - name: Clusters
+    description: 군집 관련 API
+  - name: Analysis
+    description: 분석 API (중심성, 커뮤니티 탐지 등)
+  - name: Anomalies
+    description: 이상치 탐지 API (Gemini 3 Pro Preview 사용)
+  - name: Search
+    description: 통합 검색 API
+  - name: Galaxy
+    description: 갤럭시 및 메타데이터 API
+
+security:
+  - BearerAuth: []
+
+paths:
+  /api/artists:
+    get:
+      summary: 모든 작가 조회
+      description: 페이지네이션 및 필터를 지원하는 작가 목록 조회
+      tags:
+        - Artists
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/limit'
+        - name: segment_id
+          in: query
+          description: 세그먼트 ID 필터
+          schema:
+            type: string
+        - name: career_stage
+          in: query
+          description: 경력 단계 필터
+          schema:
+            type: string
+            enum: [early, mid, late, established]
+        - name: min_score
+          in: query
+          description: 최소 복합 점수 필터
+          schema:
+            type: number
+            format: float
+            minimum: 0
+            maximum: 100
+      responses:
+        '200':
+          description: 성공
+          headers:
+            x-ratelimit-limit:
+              schema:
+                type: integer
+              description: 레이트 제한 (요청 수)
+            x-ratelimit-remaining:
+              schema:
+                type: integer
+              description: 남은 요청 수
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  artists:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Artist'
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+              examples:
+                paginated_response:
+                  summary: 페이지네이션 응답 예제
+                  value:
+                    artists:
+                      - '@context': https://schema.org/
+                        '@type': Person
+                        '@id': argo://artist/artist_001
+                        name: 작가 A
+                        argo:scores:
+                          argo:composite_score: 74.15
+                    total: 100
+                    page: 1
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/artists/{artist_id}:
+    get:
+      summary: 작가 상세 정보 조회
+      description: 특정 작가의 상세 정보 및 모든 관계 데이터 조회
+      tags:
+        - Artists
+      parameters:
+        - $ref: '#/components/parameters/artist_id'
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  artist:
+                    $ref: '#/components/schemas/Artist'
+                  affiliated_institutions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Institution'
+                  collaborators:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Artist'
+                  exhibitions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Exhibition'
+                  artworks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Artwork'
+                  cluster:
+                    $ref: '#/components/schemas/Cluster'
+              examples:
+                jsonld:
+                  summary: JSON-LD 형식 응답 예제
+                  value:
+                    artist:
+                      '@context': https://schema.org/
+                      '@type': Person
+                      '@id': argo://artist/artist_001
+                      identifier:
+                        '@type': PropertyValue
+                        propertyID: ARGO
+                        value: artist_001
+                      name: 작가 A
+                      alternateName: Artist A
+                      birthDate: '1975'
+                      url: https://example.com/artist_a
+                      address:
+                        '@type': PostalAddress
+                        addressLocality: Seoul
+                        addressCountry: KR
+                      jobTitle: Professor
+                      argo:scores:
+                        argo:inst_score: 82
+                        argo:acad_score: 68
+                        argo:media_score: 75
+                        argo:network_score: 71
+                        argo:composite_score: 74.15
+                        argo:composite_confidence: 0.92
+                      argo:structuralist_analysis:
+                        dominant_capital: institutional
+                        capital_composition:
+                          institutional_ratio: 0.28
+                          academic_ratio: 0.23
+                          media_ratio: 0.25
+                          network_ratio: 0.24
+                        structural_position:
+                          field_quadrant: Q1_established
+                          position_stability: 0.85
+                          mobility_potential: 0.15
+                    affiliated_institutions:
+                      - '@type': Organization
+                        '@id': argo://institution/inst_001
+                        name: 국립현대미술관
+                    collaborators: []
+                    exhibitions: []
+                    artworks: []
+                    cluster:
+                      '@type': argo:Cluster
+                      '@id': argo://cluster/cluster_001
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/artists/{artist_id}/network:
+    get:
+      summary: 작가 네트워크 그래프 조회
+      description: 작가의 1홉 또는 2홉 네트워크 그래프 조회
+      tags:
+        - Artists
+      parameters:
+        - $ref: '#/components/parameters/artist_id'
+        - name: depth
+          in: query
+          description: 네트워크 깊이 (1 또는 2)
+          schema:
+            type: integer
+            enum: [1, 2]
+            default: 1
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NetworkGraph'
+              examples:
+                network_graph:
+                  summary: 네트워크 그래프 예제
+                  value:
+                    nodes:
+                      - id: artist_001
+                        name: 작가 A
+                        score: 74.15
+                        type: artist
+                      - id: artist_002
+                        name: 작가 B
+                        score: 68.5
+                        type: artist
+                    edges:
+                      - source: artist_001
+                        target: artist_002
+                        strength: 0.65
+                        type: COLLABORATED_WITH
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/artists/{artist_id}/exhibitions:
+    get:
+      summary: 작가 전시 목록 조회
+      description: 특정 작가가 참여한 전시 목록 조회
+      tags:
+        - Artists
+      parameters:
+        - $ref: '#/components/parameters/artist_id'
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  exhibitions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Exhibition'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/artists/{artist_id}/artworks:
+    get:
+      summary: 작가 작품 목록 조회
+      description: 특정 작가의 작품 목록 조회
+      tags:
+        - Artists
+      parameters:
+        - $ref: '#/components/parameters/artist_id'
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  artworks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Artwork'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/artists/{artist_id}/structural-equivalents:
+    get:
+      summary: 구조적 등가성 작가 조회
+      description: 구조적 등가성 임계값(0.15) 내의 작가 목록 조회
+      tags:
+        - Artists
+      parameters:
+        - $ref: '#/components/parameters/artist_id'
+        - name: limit
+          in: query
+          description: 반환할 작가 수 제한
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 50
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  equivalents:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Artist'
+                  equivalence_score:
+                    type: number
+                    format: float
+                    description: 구조적 등가성 점수
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/artists/{artist_id}/capital-composition:
+    get:
+      summary: 자본 구성 분석 조회
+      description: 4가지 자본(제도, 학술, 담론, 네트워크) 구성 분석 조회
+      tags:
+        - Artists
+      parameters:
+        - $ref: '#/components/parameters/artist_id'
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  inst_score:
+                    type: number
+                    format: float
+                  acad_score:
+                    type: number
+                    format: float
+                  media_score:
+                    type: number
+                    format: float
+                  network_score:
+                    type: number
+                    format: float
+                  dominant_capital:
+                    type: string
+                    enum: [institutional, academic, media, network]
+                  field_quadrant:
+                    type: string
+                    enum: [Q1_established, Q2_academic_elite, Q3_media_star, Q4_emerging]
+                  structuralist_analysis:
+                    $ref: '#/components/schemas/StructuralistAnalysis'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/artists/{artist_id}/market:
+    get:
+      summary: 작가 시장 정보 조회
+      description: 작가의 거래 이력, 가격 추이, 시장 백분위수 조회
+      tags:
+        - Artists
+      parameters:
+        - $ref: '#/components/parameters/artist_id'
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transactions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Transaction'
+                  price_trend:
+                    type: object
+                    additionalProperties:
+                      type: array
+                      items:
+                        type: number
+                  market_percentile:
+                    type: number
+                    format: float
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/artists/search:
+    post:
+      summary: 작가 전문 검색
+      description: 이름, 기관, 세그먼트 등을 기반으로 한 전문 검색
+      tags:
+        - Artists
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - query
+              properties:
+                query:
+                  type: string
+                  description: 검색어
+                filters:
+                  type: object
+                  properties:
+                    segment_id:
+                      type: string
+                    career_stage:
+                      type: string
+                    min_score:
+                      type: number
+                      format: float
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Artist'
+                  count:
+                    type: integer
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/institutions:
+    get:
+      summary: 모든 기관 조회
+      description: 필터를 지원하는 기관 목록 조회
+      tags:
+        - Institutions
+      parameters:
+        - name: type
+          in: query
+          description: 기관 유형 필터
+          schema:
+            type: string
+        - name: city
+          in: query
+          description: 도시 필터
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  institutions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Institution'
+                  total:
+                    type: integer
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/institutions/{inst_id}:
+    get:
+      summary: 기관 상세 정보 조회
+      description: 기관 상세 정보 및 관련 데이터 조회
+      tags:
+        - Institutions
+      parameters:
+        - $ref: '#/components/parameters/inst_id'
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  institution:
+                    $ref: '#/components/schemas/Institution'
+                  affiliated_artists:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Artist'
+                  organized_exhibitions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Exhibition'
+                  member_clusters:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Cluster'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/institutions/{inst_id}/affiliated-artists:
+    get:
+      summary: 기관 소속 미술가 목록 조회
+      description: 특정 기관에 소속된 미술가 목록 조회
+      tags:
+        - Institutions
+      parameters:
+        - $ref: '#/components/parameters/inst_id'
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  affiliated_artists:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Artist'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/institutions/{inst_id}/exhibitions:
+    get:
+      summary: 기관 전시 목록 조회
+      description: 기관이 개최한 전시 목록 조회
+      tags:
+        - Institutions
+      parameters:
+        - $ref: '#/components/parameters/inst_id'
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  exhibitions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Exhibition'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/institutions/{inst_id}/benchmarking:
+    get:
+      summary: 기관 벤치마킹 조회
+      description: 동종 기관과의 비교 분석 조회
+      tags:
+        - Institutions
+      parameters:
+        - $ref: '#/components/parameters/inst_id'
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  self:
+                    $ref: '#/components/schemas/Institution'
+                  peers:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Institution'
+                  metrics:
+                    type: object
+                    properties:
+                      prestige_rank:
+                        type: integer
+                      exhibition_frequency:
+                        type: integer
+                      artist_diversity:
+                        type: number
+                        format: float
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/exhibitions:
+    get:
+      summary: 모든 전시 조회
+      description: 필터를 지원하는 전시 목록 조회
+      tags:
+        - Exhibitions
+      parameters:
+        - name: organizer_id
+          in: query
+          description: 주최 기관 ID 필터
+          schema:
+            type: string
+        - name: start_year
+          in: query
+          description: 시작 연도 필터
+          schema:
+            type: integer
+        - name: end_year
+          in: query
+          description: 종료 연도 필터
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  exhibitions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Exhibition'
+                  total:
+                    type: integer
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/exhibitions/{exh_id}:
+    get:
+      summary: 전시 상세 정보 조회
+      description: 전시 상세 정보 및 참여 작가, 작품 조회
+      tags:
+        - Exhibitions
+      parameters:
+        - $ref: '#/components/parameters/exh_id'
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  exhibition:
+                    $ref: '#/components/schemas/Exhibition'
+                  participating_artists:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Artist'
+                  featured_artworks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Artwork'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/transactions:
+    get:
+      summary: 모든 거래 조회
+      description: 필터를 지원하는 거래 목록 조회
+      tags:
+        - Transactions
+      parameters:
+        - name: artist_id
+          in: query
+          description: 작가 ID 필터
+          schema:
+            type: string
+        - name: transaction_type
+          in: query
+          description: 거래 유형 필터
+          schema:
+            type: string
+        - name: start_date
+          in: query
+          description: 시작 날짜 필터
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          description: 종료 날짜 필터
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transactions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Transaction'
+                  total:
+                    type: integer
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/transactions/{trans_id}:
+    get:
+      summary: 거래 상세 정보 조회
+      description: 특정 거래의 상세 정보 조회
+      tags:
+        - Transactions
+      parameters:
+        - $ref: '#/components/parameters/trans_id'
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transaction:
+                    $ref: '#/components/schemas/Transaction'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/transactions/price-history/{artist_id}:
+    get:
+      summary: 작가 거래 가격 히스토리 조회
+      description: 특정 작가의 거래 가격 히스토리 조회
+      tags:
+        - Transactions
+      parameters:
+        - $ref: '#/components/parameters/artist_id'
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  artist_id:
+                    type: string
+                  price_history:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                          format: date
+                        price_krw:
+                          type: integer
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/clusters:
+    get:
+      summary: 모든 군집 조회
+      description: 탐지된 모든 군집 목록 조회
+      tags:
+        - Clusters
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  clusters:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Cluster'
+                  total:
+                    type: integer
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/clusters/{cluster_id}:
+    get:
+      summary: 군집 상세 정보 조회
+      description: 군집 상세 정보 및 구성원, 인접 군집 조회
+      tags:
+        - Clusters
+      parameters:
+        - $ref: '#/components/parameters/cluster_id'
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cluster:
+                    $ref: '#/components/schemas/Cluster'
+                  members:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Artist'
+                  neighboring_clusters:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Cluster'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/analysis/centrality:
+    post:
+      summary: 중심성 계산
+      description: Degree, Betweenness, Eigenvector 중심성 계산
+      tags:
+        - Analysis
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - measure
+              properties:
+                measure:
+                  type: string
+                  enum: [degree, betweenness, eigenvector]
+                  description: 중심성 측정 방법
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    artist_id:
+                      type: string
+                    name:
+                      type: string
+                    score:
+                      type: number
+                      format: float
+                    rank:
+                      type: integer
+              examples:
+                centrality_results:
+                  summary: 중심성 계산 결과 예제
+                  value:
+                    - artist_id: artist_001
+                      name: 작가 A
+                      score: 0.85
+                      rank: 1
+                    - artist_id: artist_002
+                      name: 작가 B
+                      score: 0.72
+                      rank: 2
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/analysis/community-detection:
+    post:
+      summary: 커뮤니티 탐지
+      description: Louvain 알고리즘을 사용한 커뮤니티 탐지
+      tags:
+        - Analysis
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  clusters:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Cluster'
+                  modularity:
+                    type: number
+                    format: float
+                  algorithm_version:
+                    type: string
+              examples:
+                community_detection:
+                  summary: Louvain 커뮤니티 탐지 결과 예제
+                  value:
+                    clusters:
+                      - cluster_id: cluster_001
+                        cluster_type: louvain
+                        name: 모노크롬 화가 그룹
+                        member_count: 12
+                        cohesion_score: 0.78
+                    modularity: 0.65
+                    algorithm_version: Louvain v1.0
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/analysis/correlation:
+    get:
+      summary: 상관관계 분석
+      description: 4가지 점수 간의 상관관계 분석
+      tags:
+        - Analysis
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  correlation_matrix:
+                    type: array
+                    items:
+                      type: array
+                      items:
+                        type: number
+                        format: float
+                  interpretation:
+                    type: object
+                    additionalProperties:
+                      type: string
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/analysis/compare:
+    post:
+      summary: 작가 비교 분석
+      description: 2명 이상의 작가를 비교 분석
+      tags:
+        - Analysis
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - artist_ids
+              properties:
+                artist_ids:
+                  type: array
+                  items:
+                    type: string
+                  minItems: 2
+                metrics:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  comparison:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        artist_id:
+                          type: string
+                        metrics:
+                          type: object
+                          additionalProperties:
+                            type: number
+              examples:
+                comparison_results:
+                  summary: 작가 비교 분석 결과 예제
+                  value:
+                    comparison:
+                      - artist_id: artist_001
+                        metrics:
+                          composite_score: 74.15
+                          inst_score: 82
+                          acad_score: 68
+                          media_score: 75
+                          network_score: 71
+                      - artist_id: artist_002
+                        metrics:
+                          composite_score: 68.5
+                          inst_score: 70
+                          acad_score: 75
+                          media_score: 65
+                          network_score: 64
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/analysis/field-quadrants:
+    get:
+      summary: 필드 분면 분류 조회
+      description: Q1-Q4 필드 분면별 작가 분류 조회
+      tags:
+        - Analysis
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  quadrants:
+                    type: object
+                    properties:
+                      Q1_established:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Artist'
+                      Q2_academic_elite:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Artist'
+                      Q3_media_star:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Artist'
+                      Q4_emerging:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Artist'
+              examples:
+                field_quadrants:
+                  summary: 필드 분면 분류 예제
+                  value:
+                    quadrants:
+                      Q1_established:
+                        - '@id': argo://artist/artist_001
+                          name: 작가 A
+                          argo:structuralist_analysis:
+                            structural_position:
+                              field_quadrant: Q1_established
+                      Q2_academic_elite:
+                        - '@id': argo://artist/artist_002
+                          name: 작가 B
+                          argo:structuralist_analysis:
+                            structural_position:
+                              field_quadrant: Q2_academic_elite
+                      Q3_media_star: []
+                      Q4_emerging: []
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/anomalies:
+    get:
+      summary: 이상치 목록 조회
+      description: |
+        이상치 거래 목록 조회. 
+        각 이상치에 대해 Gemini 3 Pro Preview 모델을 사용하여 가설을 생성합니다.
+        환경변수 `GEMINI_API_KEY`가 필요합니다 (로컬 `.env` 파일에서 주입).
+      tags:
+        - Anomalies
+      parameters:
+        - name: segment_id
+          in: query
+          description: 세그먼트 ID 필터
+          schema:
+            type: string
+        - name: confidence
+          in: query
+          description: 신뢰도 임계값 (기본값: 0.8)
+          schema:
+            type: number
+            format: float
+            default: 0.8
+            minimum: 0
+            maximum: 1
+        - name: limit
+          in: query
+          description: 반환할 이상치 수 제한
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+      responses:
+        '200':
+          description: 성공
+          headers:
+            x-ai-model:
+              description: 사용된 AI 모델
+              schema:
+                type: string
+                example: gemini-3-pro-preview
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  anomalies:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Anomaly'
+                  total_anomalies:
+                    type: integer
+              examples:
+                with_hypotheses:
+                  summary: Gemini 3 Pro Preview로 생성된 가설 포함 예제
+                  value:
+                    anomalies:
+                      - transaction_id: trans_001
+                        artist_id: artist_001
+                        artist_name: 이상훈
+                        artwork_title: 무제 (1990)
+                        price_krw: 250000000
+                        estimate_high_krw: 150000000
+                        deviation_percent: 66.7
+                        anomaly_score: 0.78
+                        anomaly_type: overvalued
+                        hypotheses:
+                          - title: 후원자의 재정 유동성
+                            description: 수집가가 긴급 자금 조달을 위해 고가로 낙찰
+                            confidence: 36
+                            reasoning: 시장 예상치의 +65%는 일반적인 수준 초과. 경매 열정과 후원자의 목적-구입 패턴
+                          - title: 작가 명성 급상승
+                            description: 최근 전시로 인한 작가 인지도 급증
+                            confidence: 28
+                            reasoning: 최근 국립현대미술관 전시 참여로 인한 시장 반응
+                        computation_time_ms: 1250
+                    total_anomalies: 1
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+        '503':
+          $ref: '#/components/responses/503ServiceUnavailable'
+
+  /api/anomalies/analyze:
+    post:
+      summary: 이상치 재분석
+      description: |
+        특정 거래의 이상치 재분석 및 가설 생성.
+        Gemini 3 Pro Preview 모델을 사용하여 가설을 생성합니다.
+        환경변수 `GEMINI_API_KEY`가 필요합니다 (로컬 `.env` 파일에서 주입).
+      tags:
+        - Anomalies
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - transaction_id
+              properties:
+                transaction_id:
+                  type: string
+                  description: 분석할 거래 ID
+      responses:
+        '200':
+          description: 성공
+          headers:
+            x-ai-model:
+              description: 사용된 AI 모델
+              schema:
+                type: string
+                example: gemini-3-pro-preview
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Anomaly'
+              examples:
+                analyzed_anomaly:
+                  summary: Gemini 3 Pro Preview로 재분석된 이상치 예제
+                  value:
+                    transaction_id: trans_001
+                    artist_id: artist_001
+                    artist_name: 이상훈
+                    artwork_title: 무제 (1990)
+                    price_krw: 250000000
+                    estimate_high_krw: 150000000
+                    deviation_percent: 66.7
+                    anomaly_score: 0.78
+                    anomaly_type: overvalued
+                    hypotheses:
+                      - title: 후원자의 재정 유동성
+                        description: 수집가가 긴급 자금 조달을 위해 고가로 낙찰
+                        confidence: 36
+                        reasoning: 시장 예상치의 +65%는 일반적인 수준 초과. 경매 열정과 후원자의 목적-구입 패턴
+                      - title: 작가 명성 급상승
+                        description: 최근 전시로 인한 작가 인지도 급증
+                        confidence: 28
+                        reasoning: 최근 국립현대미술관 전시 참여로 인한 시장 반응
+                    computation_time_ms: 1250
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+        '503':
+          $ref: '#/components/responses/503ServiceUnavailable'
+
+  /api/search:
+    get:
+      summary: 통합 검색
+      description: 작가, 기관, 전시를 통합 검색
+      tags:
+        - Search
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: 검색어
+          schema:
+            type: string
+        - name: type
+          in: query
+          description: 검색 타입 필터
+          schema:
+            type: string
+            enum: [artist, institution, exhibition, all]
+            default: all
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      oneOf:
+                        - $ref: '#/components/schemas/Artist'
+                        - $ref: '#/components/schemas/Institution'
+                        - $ref: '#/components/schemas/Exhibition'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/galaxy-snapshot:
+    get:
+      summary: 갤럭시 스냅샷 조회
+      description: 현재 갤럭시의 통계 및 구조 메트릭 조회
+      tags:
+        - Galaxy
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GalaxySnapshot'
+              examples:
+                snapshot:
+                  summary: 갤럭시 스냅샷 예제
+                  value:
+                    snapshot_id: snapshot_20251208
+                    snapshot_date: '2025-12-08T00:00:00Z'
+                    galaxy_statistics:
+                      total_artists: 100
+                      total_institutions: 25
+                      total_exhibitions: 180
+                      total_artworks: 450
+                      total_transactions: 1200
+                      total_clusters: 9
+                    structure_metrics:
+                      entropy: 0.72
+                      density: 0.18
+                      clustering_coefficient: 0.62
+                      average_path_length: 3.2
+                      diameter: 6
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+  /api/metadata/sources:
+    get:
+      summary: 데이터 출처 조회
+      description: 모든 데이터 출처 및 신뢰도 정보 조회
+      tags:
+        - Galaxy
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data_sources:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        source_id:
+                          type: string
+                        name:
+                          type: string
+                        url:
+                          type: string
+                        last_sync:
+                          type: string
+                          format: date-time
+                        credibility_score:
+                          type: number
+                          format: float
+                        records_count:
+                          type: integer
+                        coverage:
+                          type: string
+              examples:
+                data_sources:
+                  summary: 데이터 출처 목록 예제
+                  value:
+                    data_sources:
+                      - source_id: source_arko
+                        name: ARKO
+                        url: https://arko.or.kr
+                        last_sync: '2025-12-07T18:30:00Z'
+                        credibility_score: 0.95
+                        records_count: 2500
+                        coverage: 생존 미술가 전수
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+        '500':
+          $ref: '#/components/responses/500InternalError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT Token 인증. Header에 `Authorization: Bearer <token>` 형식으로 전달
+
+  parameters:
+    artist_id:
+      name: artist_id
+      in: path
+      required: true
+      description: 작가 ID
+      schema:
+        type: string
+        example: artist_001
+    inst_id:
+      name: inst_id
+      in: path
+      required: true
+      description: 기관 ID
+      schema:
+        type: string
+        example: inst_001
+    exh_id:
+      name: exh_id
+      in: path
+      required: true
+      description: 전시 ID
+      schema:
+        type: string
+        example: exh_001
+    trans_id:
+      name: trans_id
+      in: path
+      required: true
+      description: 거래 ID
+      schema:
+        type: string
+        example: trans_001
+    cluster_id:
+      name: cluster_id
+      in: path
+      required: true
+      description: 군집 ID
+      schema:
+        type: string
+        example: cluster_001
+    page:
+      name: page
+      in: query
+      description: 페이지 번호
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+    limit:
+      name: limit
+      in: query
+      description: 페이지당 항목 수
+      schema:
+        type: integer
+        default: 20
+        minimum: 1
+        maximum: 100
+
+  schemas:
+    Artist:
+      type: object
+      description: 작가 엔터티 (JSON-LD 형식, Schema.org Person 타입)
+      properties:
+        '@context':
+          type: string
+          example: https://schema.org/
+        '@type':
+          type: string
+          example: Person
+        '@id':
+          type: string
+          example: argo://artist/artist_001
+        identifier:
+          type: object
+          properties:
+            '@type':
+              type: string
+              example: PropertyValue
+            propertyID:
+              type: string
+              example: ARGO
+            value:
+              type: string
+              example: artist_001
+        name:
+          type: string
+          example: 작가 A
+        alternateName:
+          type: string
+          example: Artist A
+        birthDate:
+          type: string
+          example: '1975'
+        url:
+          type: string
+          format: uri
+        address:
+          type: object
+          properties:
+            '@type':
+              type: string
+              example: PostalAddress
+            addressLocality:
+              type: string
+              example: Seoul
+            addressCountry:
+              type: string
+              example: KR
+        jobTitle:
+          type: string
+          example: Professor
+        argo:scores:
+          type: object
+          properties:
+            argo:inst_score:
+              type: number
+              format: float
+              minimum: 0
+              maximum: 100
+            argo:acad_score:
+              type: number
+              format: float
+              minimum: 0
+              maximum: 100
+            argo:media_score:
+              type: number
+              format: float
+              minimum: 0
+              maximum: 100
+            argo:network_score:
+              type: number
+              format: float
+              minimum: 0
+              maximum: 100
+            argo:composite_score:
+              type: number
+              format: float
+              minimum: 0
+              maximum: 100
+            argo:composite_confidence:
+              type: number
+              format: float
+              minimum: 0
+              maximum: 1
+        argo:structuralist_analysis:
+          $ref: '#/components/schemas/StructuralistAnalysis'
+        argo:coordinates_3d:
+          type: object
+          properties:
+            argo:x:
+              type: number
+              format: float
+            argo:y:
+              type: number
+              format: float
+            argo:z:
+              type: number
+              format: float
+            argo:radius:
+              type: number
+              format: float
+        argo:cluster:
+          type: object
+          properties:
+            '@type':
+              type: string
+              example: argo:Cluster
+            '@id':
+              type: string
+              example: argo://cluster/cluster_001
+
+    Institution:
+      type: object
+      description: 기관 엔터티 (JSON-LD 형식, Schema.org Organization 타입)
+      properties:
+        '@context':
+          type: string
+          example: https://schema.org/
+        '@type':
+          type: string
+          example: Organization
+        '@id':
+          type: string
+          example: argo://institution/inst_001
+        name:
+          type: string
+          example: 국립현대미술관
+        url:
+          type: string
+          format: uri
+        address:
+          type: object
+          properties:
+            '@type':
+              type: string
+              example: PostalAddress
+            addressLocality:
+              type: string
+              example: Seoul
+            addressCountry:
+              type: string
+              example: KR
+
+    Exhibition:
+      type: object
+      description: 전시 엔터티 (JSON-LD 형식, Schema.org Event 타입)
+      properties:
+        '@context':
+          type: string
+          example: https://schema.org/
+        '@type':
+          type: string
+          example: Event
+        '@id':
+          type: string
+          example: argo://exhibition/exh_001
+        name:
+          type: string
+          example: 한국 추상미술의 맥락
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        location:
+          type: object
+          properties:
+            '@type':
+              type: string
+              example: Place
+            name:
+              type: string
+
+    Transaction:
+      type: object
+      description: 거래 엔터티
+      properties:
+        trans_id:
+          type: string
+          example: trans_001
+        artist_id:
+          type: string
+        artwork_id:
+          type: string
+        price_krw:
+          type: integer
+        transaction_date:
+          type: string
+          format: date
+        transaction_type:
+          type: string
+        venue:
+          type: string
+        market_analysis:
+          type: object
+          properties:
+            anomaly_score:
+              type: number
+              format: float
+            is_outlier:
+              type: boolean
+
+    Cluster:
+      type: object
+      description: 군집 엔터티
+      properties:
+        cluster_id:
+          type: string
+          example: cluster_001
+        cluster_type:
+          type: string
+          enum: [louvain, geographic, genre]
+        name:
+          type: string
+        member_count:
+          type: integer
+        cohesion_score:
+          type: number
+          format: float
+
+    Artwork:
+      type: object
+      description: 작품 엔터티
+      properties:
+        work_id:
+          type: string
+        title:
+          type: string
+        creation_year:
+          type: integer
+        medium:
+          type: string
+        dimensions:
+          type: object
+          properties:
+            height_cm:
+              type: number
+            width_cm:
+              type: number
+        estimated_value_usd:
+          type: integer
+
+    StructuralistAnalysis:
+      type: object
+      description: 구조주의 분석 결과
+      properties:
+        dominant_capital:
+          type: string
+          enum: [institutional, academic, media, network]
+        capital_composition:
+          type: object
+          properties:
+            institutional_ratio:
+              type: number
+              format: float
+            academic_ratio:
+              type: number
+              format: float
+            media_ratio:
+              type: number
+              format: float
+            network_ratio:
+              type: number
+              format: float
+        structural_position:
+          type: object
+          properties:
+            field_quadrant:
+              type: string
+              enum: [Q1_established, Q2_academic_elite, Q3_media_star, Q4_emerging]
+            position_stability:
+              type: number
+              format: float
+            mobility_potential:
+              type: number
+              format: float
+
+    NetworkGraph:
+      type: object
+      description: 네트워크 그래프 구조
+      properties:
+        nodes:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              score:
+                type: number
+                format: float
+              type:
+                type: string
+        edges:
+          type: array
+          items:
+            type: object
+            properties:
+              source:
+                type: string
+              target:
+                type: string
+              strength:
+                type: number
+                format: float
+              type:
+                type: string
+
+    GalaxySnapshot:
+      type: object
+      description: 갤럭시 스냅샷
+      properties:
+        snapshot_id:
+          type: string
+        snapshot_date:
+          type: string
+          format: date-time
+        galaxy_statistics:
+          type: object
+          properties:
+            total_artists:
+              type: integer
+            total_institutions:
+              type: integer
+            total_exhibitions:
+              type: integer
+            total_artworks:
+              type: integer
+            total_transactions:
+              type: integer
+            total_clusters:
+              type: integer
+        structure_metrics:
+          type: object
+          properties:
+            entropy:
+              type: number
+              format: float
+            density:
+              type: number
+              format: float
+            clustering_coefficient:
+              type: number
+              format: float
+            average_path_length:
+              type: number
+              format: float
+            diameter:
+              type: integer
+
+    Hypothesis:
+      type: object
+      description: LLM 생성 가설 (Gemini 3 Pro Preview)
+      properties:
+        title:
+          type: string
+          description: 가설 제목 (20자 이내)
+          example: 후원자의 재정 유동성
+        description:
+          type: string
+          description: 가설 설명 (50자 이내)
+          example: 수집가가 긴급 자금 조달을 위해 고가로 낙찰
+        confidence:
+          type: number
+          format: float
+          description: 신뢰도 (0~100%)
+          minimum: 0
+          maximum: 100
+          example: 45
+        reasoning:
+          type: string
+          description: 가설 근거
+          example: 시장 예상치의 +65%는 일반적인 수준 초과. 경매 열정과 후원자의 목적-구입 패턴
+
+    Anomaly:
+      type: object
+      description: 이상치 거래 정보 (Gemini 3 Pro Preview로 가설 생성)
+      properties:
+        transaction_id:
+          type: string
+        artist_id:
+          type: string
+        artist_name:
+          type: string
+        artwork_title:
+          type: string
+        price_krw:
+          type: integer
+        estimate_high_krw:
+          type: integer
+        deviation_percent:
+          type: number
+          format: float
+        anomaly_score:
+          type: number
+          format: float
+          description: 이상치 점수 (0.7 이상 = 이상치)
+        anomaly_type:
+          type: string
+          enum: [overvalued, undervalued, timing_anomaly]
+        hypotheses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Hypothesis'
+          description: Gemini 3 Pro Preview로 생성된 가설 목록
+        computation_time_ms:
+          type: integer
+
+    Error:
+      type: object
+      description: 에러 응답 스키마
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              example: INVALID_PARAMETER
+            message:
+              type: string
+              example: 사용자 친화적 에러 메시지
+            details:
+              type: string
+              example: 상세 기술 정보 (개발자용)
+            timestamp:
+              type: string
+              format: date-time
+            request_id:
+              type: string
+            documentation:
+              type: string
+              format: uri
+
+  responses:
+    400BadRequest:
+      description: 잘못된 요청
+      headers:
+        x-ratelimit-limit:
+          schema:
+            type: integer
+          description: 레이트 제한 (요청 수)
+        x-ratelimit-remaining:
+          schema:
+            type: integer
+          description: 남은 요청 수
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: INVALID_PARAMETER
+              message: 필수 파라미터가 누락되었거나 형식이 올바르지 않습니다
+              details: 'limit' 파라미터는 1 이상 100 이하여야 합니다
+              timestamp: '2025-12-08T18:30:00Z'
+              request_id: req_123456789
+              documentation: https://artdrive1208-api-xxx.run.app/docs/errors/INVALID_PARAMETER
+
+    401Unauthorized:
+      description: 인증 실패
+      headers:
+        x-ratelimit-limit:
+          schema:
+            type: integer
+        x-ratelimit-remaining:
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: UNAUTHORIZED
+              message: API 키가 없거나 만료되었습니다
+              details: Authorization 헤더에 유효한 JWT 토큰이 필요합니다
+              timestamp: '2025-12-08T18:30:00Z'
+              request_id: req_123456789
+              documentation: https://artdrive1208-api-xxx.run.app/docs/errors/UNAUTHORIZED
+
+    403Forbidden:
+      description: 권한 없음
+      headers:
+        x-ratelimit-limit:
+          schema:
+            type: integer
+        x-ratelimit-remaining:
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: FORBIDDEN
+              message: 이 리소스에 대한 접근 권한이 없습니다
+              details: 프리미엄 계층 이상의 구독이 필요합니다
+              timestamp: '2025-12-08T18:30:00Z'
+              request_id: req_123456789
+              documentation: https://artdrive1208-api-xxx.run.app/docs/errors/FORBIDDEN
+
+    404NotFound:
+      description: 리소스를 찾을 수 없음
+      headers:
+        x-ratelimit-limit:
+          schema:
+            type: integer
+        x-ratelimit-remaining:
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: NOT_FOUND
+              message: 요청한 작가를 찾을 수 없습니다
+              details: artist_id 'artist_999'에 해당하는 작가가 존재하지 않습니다
+              timestamp: '2025-12-08T18:30:00Z'
+              request_id: req_123456789
+              documentation: https://artdrive1208-api-xxx.run.app/docs/errors/NOT_FOUND
+
+    429TooManyRequests:
+      description: 레이트 제한 초과
+      headers:
+        x-ratelimit-limit:
+          schema:
+            type: integer
+            example: 10000
+          description: 레이트 제한 (요청 수)
+        x-ratelimit-remaining:
+          schema:
+            type: integer
+            example: 0
+          description: 남은 요청 수
+        retry-after:
+          schema:
+            type: integer
+            example: 3600
+          description: 재시도 가능 시간 (초)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: RATE_LIMIT_EXCEEDED
+              message: 요청 한도를 초과했습니다
+              details: 월간 요청 한도(10,000건)를 초과했습니다. 다음 리셋 시간까지 대기하거나 프리미엄 계층으로 업그레이드하세요
+              timestamp: '2025-12-08T18:30:00Z'
+              request_id: req_123456789
+              documentation: https://artdrive1208-api-xxx.run.app/docs/errors/RATE_LIMIT_EXCEEDED
+
+    500InternalError:
+      description: 내부 서버 오류
+      headers:
+        x-ratelimit-limit:
+          schema:
+            type: integer
+        x-ratelimit-remaining:
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: INTERNAL_ERROR
+              message: 서버에서 오류가 발생했습니다
+              details: Neo4j 쿼리 실행 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요
+              timestamp: '2025-12-08T18:30:00Z'
+              request_id: req_123456789
+              documentation: https://artdrive1208-api-xxx.run.app/docs/errors/INTERNAL_ERROR
+
+    503ServiceUnavailable:
+      description: 서비스 일시 중단
+      headers:
+        x-ratelimit-limit:
+          schema:
+            type: integer
+        x-ratelimit-remaining:
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: SERVICE_UNAVAILABLE
+              message: 서비스가 일시적으로 사용할 수 없습니다
+              details: Gemini API 서비스가 일시적으로 중단되었습니다. 잠시 후 다시 시도해주세요
+              timestamp: '2025-12-08T18:30:00Z'
+              request_id: req_123456789
+              documentation: https://artdrive1208-api-xxx.run.app/docs/errors/SERVICE_UNAVAILABLE
+

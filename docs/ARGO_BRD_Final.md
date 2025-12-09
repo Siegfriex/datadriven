@@ -27,6 +27,28 @@
 
 ---
 
+## GCP 프로젝트 정보
+
+**프로젝트 이름**: ARTDRIVE  
+**프로젝트 ID**: artdrive1208  
+**리전**: asia-northeast3 (서울)
+
+### Firebase 설정
+- **API Key**: AIzaSyC4XxekCt6Ob1ufyuRucrHMqXvEInkCpsg
+- **Auth Domain**: artdrive1208.firebaseapp.com
+- **Project ID**: artdrive1208
+- **Storage Bucket**: artdrive1208.firebasestorage.app
+- **Messaging Sender ID**: 55248184822
+- **App ID**: 1:55248184822:web:cef02018a4af9dbbdd93d7
+- **Measurement ID**: G-DJ2C6DBJ2Q
+
+### 초기 도메인
+- **프론트엔드**: https://artdrive1208.web.app
+- **백엔드 API**: https://artdrive1208-api-xxx.run.app (Cloud Run 자동 생성)
+- **향후 커스텀 도메인**: argo.art, api.argo.art (추가 예정)
+
+---
+
 ## 1. 비즈니스 환경 분석
 
 ### 1.1 문제 정의 (Pain Point)
@@ -384,7 +406,7 @@ Year 3: 글로벌 확장
 
 완화 전략:
 1. WAF(Web Application Firewall) 적용
-   ├─ Cloudflare WAF (무료 티어)
+   ├─ Cloud Armor (GCP WAF) 또는 Cloudflare WAF (무료 티어)
    ├─ DDoS 보호 자동 활성화
    └─ 이상 트래픽 자동 차단
 
@@ -404,7 +426,7 @@ Year 3: 글로벌 확장
    └─ 보안 팀 즉시 알림
 
 비용:
-├─ Cloudflare WAF: 무료 티어 (충분)
+├─ Cloud Armor: 무료 티어 (기본 DDoS 보호) 또는 Cloudflare WAF 무료 티어
 ├─ 추가 보안 도구: 월 10만 원 (필요시)
 └─ 보안 감사: 연 1회 (연 500만 원)
 ```
@@ -412,31 +434,32 @@ Year 3: 글로벌 확장
 #### 6.2.3 인프라 장애 위험
 
 ```
-위험: 클라우드 서비스 장애 (Railway, Heroku, Neo4j Aura)
+위험: 클라우드 서비스 장애 (Cloud Run, Firebase Hosting, Neo4j Aura)
 영향: 서비스 중단, 사용자 이탈
-확률: 낮음 (클라우드 SLA 99.9%)
+확률: 낮음 (GCP SLA 99.9%, Firebase SLA 99.95%)
 심각도: High
 
 완화 전략:
-1. 다중 클라우드 전략 (장기)
-   ├─ Primary: Railway/Heroku
-   ├─ Secondary: AWS/GCP (장애 시 전환)
-   └─ 구현 시기: Year 2 (비용 고려)
+1. 다중 리전 전략 (장기)
+   ├─ Primary: asia-northeast3 (서울)
+   ├─ Secondary: asia-northeast1 (도쿄) - 장애 시 전환
+   └─ 구현 시기: Year 2 (트래픽 증가 시)
 
 2. 모니터링 및 알림
-   ├─ Uptime Robot: 가용성 모니터링 (5분 간격)
-   ├─ 자동 알림: 장애 감지 시 즉시 알림
+   ├─ Cloud Monitoring: 가용성 모니터링 (실시간)
+   ├─ Cloud Logging: 에러 추적 및 분석
+   ├─ 자동 알림: 장애 감지 시 즉시 알림 (Slack, Email)
    └─ 대응 프로세스: 30분 내 복구 목표
 
 3. 폴백 전략
-   ├─ 정적 자산: CDN 캐싱 (영향 없음)
-   ├─ API 실패: 캐시된 데이터 반환
+   ├─ 정적 자산: Cloud CDN 캐싱 (Firebase Hosting 자동 포함)
+   ├─ API 실패: Cloud Memorystore 캐시된 데이터 반환
    └─ 읽기 전용 모드: 쓰기 기능 일시 중단 가능
 
 비용:
-├─ Uptime Robot: 무료 티어 (50개 모니터)
-├─ 다중 클라우드: Year 2 이후 검토
-└─ 폴백 인프라: 월 20만 원 (필요시)
+├─ Cloud Monitoring: 무료 티어 (150MB 로그/월)
+├─ 다중 리전: Year 2 이후 검토 (추가 비용 발생)
+└─ 폴백 인프라: Cloud Memorystore 기본 비용 포함
 ```
 
 ### 6.3 기술적 위험 상세 분석 (신규)
@@ -632,7 +655,11 @@ Year 3: 글로벌 확장
 필요 자금: 5–7억 원
 
 용도:
-├─ 개발 & 인프라 (2억): 팀 구성, 클라우드, 도구
+├─ 개발 & 인프라 (2억): 팀 구성, GCP 클라우드, 도구
+│  ├─ Firebase Hosting: 무료 티어 (초기)
+│  ├─ Cloud Run: 무료 티어 + 사용량 기반 (월 $5-20)
+│  ├─ Cloud Memorystore: 월 $30-50
+│  └─ Neo4j Aura: 월 $0-25 (Free 티어)
 ├─ 데이터 (1.5억): 수집, 정규화, 검증
 ├─ 마케팅 & PR (1.5억): 정부 관계, 학술 네트워크
 └─ 운영 & 버퍼 (1.5억): 3개월 운영 비용
@@ -735,7 +762,7 @@ ARGO는 단순한 **데이터 플랫폼**이 아니라 **사회 혁신 도구**�
 | 2 | 자금 조달 신청 (KEIT, 미래부 R&D) | 전략 + 재무 | 2주일 |
 | 3 | 초기 팀 충원 (개발자 2명) | HR | 3주일 |
 | 4 | 100명 데이터 수집 & 정규화 완료 | 데이터 팀 | 2개월 |
-| 5 | MVP 배포 + 초기 사용자 100명 확보 | 전체 팀 | 3개월 |
+| 5 | MVP 배포 + 초기 사용자 100명 확보 | 전체 팀 | 3개월 | Firebase Hosting + Cloud Run |
 
 ---
 
@@ -907,8 +934,8 @@ ARGO의 점수 산정 방법론은 **Pierre Bourdieu의 장(Field) 이론**에 �
    └─ 로그 분석 (에러 원인 파악)
 
 2. 복구 실행 (10-30분)
-   ├─ 새 인스턴스 자동 생성 (Railway/Heroku)
-   ├─ 환경 변수 복원
+   ├─ 새 인스턴스 자동 생성 (Cloud Run)
+   ├─ 환경 변수 복원 (Secret Manager 또는 환경 변수)
    ├─ 의존성 확인 (Neo4j 연결)
    └─ Health check 통과 확인
 
@@ -987,5 +1014,25 @@ ARGO의 점수 산정 방법론은 **Pierre Bourdieu의 장(Field) 이론**에 �
 |-----|------|---------|--------|
 | 1.0 | 2025-12-08 | 초안 작성 | 전략팀 |
 | 1.1 | 2025-12-08 | 운영/기술적 위험 상세 분석 추가, 재해 복구 계획 추가, 재정 계획 보완 | 전략팀 |
+| 1.2 | 2025-12-08 | GCP 인프라 구성으로 전면 업데이트 (Firebase Hosting, Cloud Run, Cloud Memorystore) | 전략팀 |
+| 1.3 | 2025-12-08 | 프론트엔드 구현 상태 반영 | 전략팀 |
 | 2.0 | 예정 | 보드 검토 후 수정 | 경영진 |
 | 3.0 | 예정 | 최종 승인 버전 | 실행이사회 |
+
+---
+
+## 구현 상태 (Implementation Status)
+
+**Last Updated**: 2025-12-08
+
+### Phase 1 진행 상황
+- ✅ 프론트엔드 기본 구조 완성
+- ✅ 3D 갤럭시 시각화 기본 구현 완료
+- ✅ 프로젝트 구조 정리 완료 (쉐이더 관련 파일 제거)
+- ⏳ 백엔드 API 개발 예정
+- ⏳ Neo4j 데이터베이스 연동 예정
+
+### 주요 마일스톤
+- ✅ **2025-12-08**: 프론트엔드 기본 구조 및 3D 갤럭시 시각화 완료
+- ⏳ **2025-12-15**: 백엔드 API 기본 구조 완성 예정
+- ⏳ **2026-01-15**: MVP 배포 예정

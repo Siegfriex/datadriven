@@ -3,10 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
+/**
+ * ARGO 프로젝트 전용 설정
+ * 필요시 ARGO 관련 설정을 여기에 추가
+ */
 
-export const EDITMODE = false;
-export const SHOW_SETTINGS_BUTTON = true;
-export const SHOW_SHARE_BUTTON = false;
-export const SHOW_HUD_BUTTON = false;
-export const SHOW_MUTE_BUTTON = true;
-export const ENABLE_AI_FEATURES = true;
+// 예시: ARGO 관련 설정 (필요시 사용)
+// export const ARGO_API_URL = 'https://api.argo.art';
+// export const ARGO_VERSION = '1.0.0';

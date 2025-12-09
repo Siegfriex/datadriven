@@ -1386,6 +1386,8 @@ Week 3: 검증 및 배포
 ├─ Day 3: 코드 리뷰
 ├─ Day 4: 문서 최종 검토
 └─ Day 5: 버전 릴리즈 (v1.0_structuralist)
+    ├─ Firebase Hosting 배포 (프론트엔드)
+    └─ Cloud Run 배포 (백엔드 API)
 ```
 
 ### 5.2 체크리스트

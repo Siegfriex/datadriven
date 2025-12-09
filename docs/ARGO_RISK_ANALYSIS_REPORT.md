@@ -2,9 +2,10 @@
 ## Risk Analysis & Mitigation Strategy Report
 
 **작성일**: 2025-12-08  
-**버전**: 1.0  
+**버전**: 1.1  
 **검증 범위**: 전체 문서 스위트 (BRD, Schema, PRD, SRD, TSD)  
-**분석 방법**: 문서 분석, 기술적 검토, 비즈니스 리스크 평가
+**분석 방법**: 문서 분석, 기술적 검토, 비즈니스 리스크 평가  
+**업데이트**: GCP 인프라 구성 반영 (Firebase Hosting, Cloud Run, Cloud Memorystore)
 
 ---
 
@@ -228,7 +229,7 @@
 
 **완화 전략:**
 1. WAF(Web Application Firewall) 적용 (TSD 섹션 9.1, BRD 섹션 6.2.2)
-   - Cloudflare WAF (무료 티어)
+   - Cloud Armor (GCP WAF) 또는 Cloudflare WAF (무료 티어)
    - DDoS 보호 자동 활성화
 
 2. API 키 검증 강화 (SRD 섹션 6.4)
@@ -239,7 +240,7 @@
    - IP 기반 Rate Limiting
    - 동적 Rate Limiting
 
-**예상 비용**: Cloudflare 무료 티어 (충분)  
+**예상 비용**: Cloud Armor 무료 티어 또는 Cloudflare 무료 티어 (충분)  
 **구현 우선순위**: Phase 2 (1주일 내)  
 **담당**: Security 팀
 

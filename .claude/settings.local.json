@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build:*)",
+      "Bash(firebase deploy:*)",
+      "Bash(git pull:*)",
+      "Bash(npm install:*)",
+      "Bash(firebase functions:delete:*)",
+      "Bash(gcloud run services add-iam-policy-binding:*)",
+      "Bash(gcloud auth login:*)",
+      "Bash(gcloud config:*)",
+      "Bash(gcloud services enable:*)",
+      "Bash(gcloud services list:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

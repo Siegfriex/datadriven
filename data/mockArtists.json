@@ -1,0 +1,2684 @@
+[
+  {
+    "artist_id": "artist_001",
+    "name": "작가1",
+    "alternativeName": "Artist1",
+    "birth_year": 1994,
+    "segment_id": "contemporary_abstract_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 66.5,
+      "acad_score": 63.8,
+      "media_score": 77.9,
+      "network_score": 78.3,
+      "composite_score": 71.8
+    },
+    "coordinates_3d": {
+      "x": 9.9,
+      "y": 8.3,
+      "z": 16.7,
+      "radius": 25.7
+    },
+    "collaborators": [
+      "artist_006",
+      "artist_007",
+      "artist_016"
+    ]
+  },
+  {
+    "artist_id": "artist_002",
+    "name": "작가2",
+    "alternativeName": "Artist2",
+    "birth_year": 1991,
+    "segment_id": "contemporary_media_KR",
+    "career_stage": "late",
+    "scores": {
+      "inst_score": 66.6,
+      "acad_score": 78.5,
+      "media_score": 70.6,
+      "network_score": 64.4,
+      "composite_score": 69.4
+    },
+    "coordinates_3d": {
+      "x": 10,
+      "y": 17.1,
+      "z": 12.4,
+      "radius": 22.9
+    },
+    "collaborators": [
+      "artist_003",
+      "artist_043",
+      "artist_018",
+      "artist_031"
+    ]
+  },
+  {
+    "artist_id": "artist_003",
+    "name": "작가3",
+    "alternativeName": "Artist3",
+    "birth_year": 1990,
+    "segment_id": "contemporary_sculpture_KR",
+    "career_stage": "early",
+    "scores": {
+      "inst_score": 84.1,
+      "acad_score": 69.9,
+      "media_score": 71.6,
+      "network_score": 75.2,
+      "composite_score": 75.9
+    },
+    "coordinates_3d": {
+      "x": 20.5,
+      "y": 11.9,
+      "z": 13,
+      "radius": 25
+    },
+    "collaborators": [
+      "artist_088",
+      "artist_047",
+      "artist_061",
+      "artist_028"
+    ]
+  },
+  {
+    "artist_id": "artist_004",
+    "name": "작가4",
+    "alternativeName": "Artist4",
+    "birth_year": 1990,
+    "segment_id": "contemporary_installation_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 81.9,
+      "acad_score": 70.5,
+      "media_score": 72.4,
+      "network_score": 66,
+      "composite_score": 73.3
+    },
+    "coordinates_3d": {
+      "x": 19.2,
+      "y": 12.3,
+      "z": 13.4,
+      "radius": 23.2
+    },
+    "collaborators": [
+      "artist_064",
+      "artist_086"
+    ]
+  },
+  {
+    "artist_id": "artist_005",
+    "name": "작가5",
+    "alternativeName": "Artist5",
+    "birth_year": 1980,
+    "segment_id": "contemporary_monochrome_KR",
+    "career_stage": "late",
+    "scores": {
+      "inst_score": 82.2,
+      "acad_score": 74.3,
+      "media_score": 78.8,
+      "network_score": 85.1,
+      "composite_score": 80.5
+    },
+    "coordinates_3d": {
+      "x": 19.3,
+      "y": 14.6,
+      "z": 17.3,
+      "radius": 27
+    },
+    "collaborators": [
+      "artist_008",
+      "artist_011",
+      "artist_033",
+      "artist_066"
+    ]
+  },
+  {
+    "artist_id": "artist_006",
+    "name": "작가6",
+    "alternativeName": "Artist6",
+    "birth_year": 1958,
+    "segment_id": "contemporary_abstract_KR",
+    "career_stage": "early",
+    "scores": {
+      "inst_score": 80.6,
+      "acad_score": 73.8,
+      "media_score": 78.6,
+      "network_score": 73.6,
+      "composite_score": 77
+    },
+    "coordinates_3d": {
+      "x": 18.4,
+      "y": 14.3,
+      "z": 17.2,
+      "radius": 24.7
+    },
+    "collaborators": [
+      "artist_064",
+      "artist_020"
+    ]
+  },
+  {
+    "artist_id": "artist_007",
+    "name": "작가7",
+    "alternativeName": "Artist7",
+    "birth_year": 1952,
+    "segment_id": "contemporary_media_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 81.5,
+      "acad_score": 68.9,
+      "media_score": 70,
+      "network_score": 72.2,
+      "composite_score": 73.8
+    },
+    "coordinates_3d": {
+      "x": 18.9,
+      "y": 11.4,
+      "z": 12,
+      "radius": 24.4
+    },
+    "collaborators": [
+      "artist_049",
+      "artist_072",
+      "artist_045",
+      "artist_010",
+      "artist_028",
+      "artist_005"
+    ]
+  },
+  {
+    "artist_id": "artist_008",
+    "name": "작가8",
+    "alternativeName": "Artist8",
+    "birth_year": 1991,
+    "segment_id": "contemporary_sculpture_KR",
+    "career_stage": "late",
+    "scores": {
+      "inst_score": 75.9,
+      "acad_score": 77.1,
+      "media_score": 65.2,
+      "network_score": 71.6,
+      "composite_score": 72.4
+    },
+    "coordinates_3d": {
+      "x": 15.5,
+      "y": 16.3,
+      "z": 9.1,
+      "radius": 24.3
+    },
+    "collaborators": [
+      "artist_049",
+      "artist_025"
+    ]
+  },
+  {
+    "artist_id": "artist_009",
+    "name": "작가9",
+    "alternativeName": "Artist9",
+    "birth_year": 1969,
+    "segment_id": "contemporary_installation_KR",
+    "career_stage": "early",
+    "scores": {
+      "inst_score": 73.2,
+      "acad_score": 76.6,
+      "media_score": 71.2,
+      "network_score": 66.9,
+      "composite_score": 71.8
+    },
+    "coordinates_3d": {
+      "x": 13.9,
+      "y": 16,
+      "z": 12.7,
+      "radius": 23.4
+    },
+    "collaborators": [
+      "artist_075",
+      "artist_047",
+      "artist_059",
+      "artist_006"
+    ]
+  },
+  {
+    "artist_id": "artist_010",
+    "name": "작가10",
+    "alternativeName": "Artist10",
+    "birth_year": 1956,
+    "segment_id": "contemporary_monochrome_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 67.6,
+      "acad_score": 62.9,
+      "media_score": 63.8,
+      "network_score": 64.6,
+      "composite_score": 65
+    },
+    "coordinates_3d": {
+      "x": 10.6,
+      "y": 7.8,
+      "z": 8.3,
+      "radius": 22.9
+    },
+    "collaborators": [
+      "artist_020",
+      "artist_089",
+      "artist_008",
+      "artist_056",
+      "artist_059"
+    ]
+  },
+  {
+    "artist_id": "artist_011",
+    "name": "작가11",
+    "alternativeName": "Artist11",
+    "birth_year": 1958,
+    "segment_id": "contemporary_abstract_KR",
+    "career_stage": "late",
+    "scores": {
+      "inst_score": 79.9,
+      "acad_score": 78.2,
+      "media_score": 71.1,
+      "network_score": 79.2,
+      "composite_score": 77.2
+    },
+    "coordinates_3d": {
+      "x": 18,
+      "y": 16.9,
+      "z": 12.7,
+      "radius": 25.8
+    },
+    "collaborators": [
+      "artist_046",
+      "artist_045"
+    ]
+  },
+  {
+    "artist_id": "artist_012",
+    "name": "작가12",
+    "alternativeName": "Artist12",
+    "birth_year": 1951,
+    "segment_id": "contemporary_media_KR",
+    "career_stage": "early",
+    "scores": {
+      "inst_score": 82.8,
+      "acad_score": 64.7,
+      "media_score": 64.9,
+      "network_score": 72.6,
+      "composite_score": 72.1
+    },
+    "coordinates_3d": {
+      "x": 19.7,
+      "y": 8.8,
+      "z": 8.9,
+      "radius": 24.5
+    },
+    "collaborators": [
+      "artist_049",
+      "artist_084",
+      "artist_068",
+      "artist_069",
+      "artist_028"
+    ]
+  },
+  {
+    "artist_id": "artist_013",
+    "name": "작가13",
+    "alternativeName": "Artist13",
+    "birth_year": 1999,
+    "segment_id": "contemporary_sculpture_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 83.4,
+      "acad_score": 68.9,
+      "media_score": 77.5,
+      "network_score": 70.5,
+      "composite_score": 75.8
+    },
+    "coordinates_3d": {
+      "x": 20,
+      "y": 11.4,
+      "z": 16.5,
+      "radius": 24.1
+    },
+    "collaborators": [
+      "artist_035",
+      "artist_034",
+      "artist_024"
+    ]
+  },
+  {
+    "artist_id": "artist_014",
+    "name": "작가14",
+    "alternativeName": "Artist14",
+    "birth_year": 1957,
+    "segment_id": "contemporary_installation_KR",
+    "career_stage": "late",
+    "scores": {
+      "inst_score": 80.7,
+      "acad_score": 75.7,
+      "media_score": 71.4,
+      "network_score": 68.7,
+      "composite_score": 74.4
+    },
+    "coordinates_3d": {
+      "x": 18.4,
+      "y": 15.4,
+      "z": 12.9,
+      "radius": 23.7
+    },
+    "collaborators": [
+      "artist_079",
+      "artist_002",
+      "artist_036",
+      "artist_021"
+    ]
+  },
+  {
+    "artist_id": "artist_015",
+    "name": "작가15",
+    "alternativeName": "Artist15",
+    "birth_year": 1960,
+    "segment_id": "contemporary_monochrome_KR",
+    "career_stage": "early",
+    "scores": {
+      "inst_score": 65.1,
+      "acad_score": 77.1,
+      "media_score": 75.2,
+      "network_score": 71.6,
+      "composite_score": 71.7
+    },
+    "coordinates_3d": {
+      "x": 9.1,
+      "y": 16.3,
+      "z": 15.1,
+      "radius": 24.3
+    },
+    "collaborators": [
+      "artist_070",
+      "artist_060",
+      "artist_057",
+      "artist_067",
+      "artist_063",
+      "artist_029"
+    ]
+  },
+  {
+    "artist_id": "artist_016",
+    "name": "작가16",
+    "alternativeName": "Artist16",
+    "birth_year": 1952,
+    "segment_id": "contemporary_abstract_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 68.5,
+      "acad_score": 60.5,
+      "media_score": 70,
+      "network_score": 76.3,
+      "composite_score": 69.2
+    },
+    "coordinates_3d": {
+      "x": 11.1,
+      "y": 6.3,
+      "z": 12,
+      "radius": 25.3
+    },
+    "collaborators": [
+      "artist_097",
+      "artist_020",
+      "artist_051"
+    ]
+  },
+  {
+    "artist_id": "artist_017",
+    "name": "작가17",
+    "alternativeName": "Artist17",
+    "birth_year": 1970,
+    "segment_id": "contemporary_media_KR",
+    "career_stage": "late",
+    "scores": {
+      "inst_score": 67.9,
+      "acad_score": 62.2,
+      "media_score": 62.6,
+      "network_score": 61.3,
+      "composite_score": 63.8
+    },
+    "coordinates_3d": {
+      "x": 10.7,
+      "y": 7.3,
+      "z": 7.6,
+      "radius": 22.3
+    },
+    "collaborators": [
+      "artist_052",
+      "artist_065"
+    ]
+  },
+  {
+    "artist_id": "artist_018",
+    "name": "작가18",
+    "alternativeName": "Artist18",
+    "birth_year": 1961,
+    "segment_id": "contemporary_sculpture_KR",
+    "career_stage": "early",
+    "scores": {
+      "inst_score": 67,
+      "acad_score": 67.9,
+      "media_score": 57.1,
+      "network_score": 57.8,
+      "composite_score": 62.4
+    },
+    "coordinates_3d": {
+      "x": 10.2,
+      "y": 10.8,
+      "z": 4.3,
+      "radius": 21.6
+    },
+    "collaborators": [
+      "artist_025",
+      "artist_089",
+      "artist_038",
+      "artist_024"
+    ]
+  },
+  {
+    "artist_id": "artist_019",
+    "name": "작가19",
+    "alternativeName": "Artist19",
+    "birth_year": 1959,
+    "segment_id": "contemporary_installation_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 73.8,
+      "acad_score": 64.7,
+      "media_score": 71.4,
+      "network_score": 71.2,
+      "composite_score": 70.7
+    },
+    "coordinates_3d": {
+      "x": 14.3,
+      "y": 8.8,
+      "z": 12.8,
+      "radius": 24.2
+    },
+    "collaborators": [
+      "artist_070",
+      "artist_024"
+    ]
+  },
+  {
+    "artist_id": "artist_020",
+    "name": "작가20",
+    "alternativeName": "Artist20",
+    "birth_year": 1984,
+    "segment_id": "contemporary_monochrome_KR",
+    "career_stage": "late",
+    "scores": {
+      "inst_score": 56.4,
+      "acad_score": 74.3,
+      "media_score": 63.9,
+      "network_score": 66.9,
+      "composite_score": 64.5
+    },
+    "coordinates_3d": {
+      "x": 3.8,
+      "y": 14.6,
+      "z": 8.3,
+      "radius": 23.4
+    },
+    "collaborators": [
+      "artist_048",
+      "artist_030",
+      "artist_093",
+      "artist_005",
+      "artist_055",
+      "artist_073"
+    ]
+  },
+  {
+    "artist_id": "artist_021",
+    "name": "작가21",
+    "alternativeName": "Artist21",
+    "birth_year": 1969,
+    "segment_id": "contemporary_abstract_KR",
+    "career_stage": "early",
+    "scores": {
+      "inst_score": 59.4,
+      "acad_score": 71.9,
+      "media_score": 55.1,
+      "network_score": 54.1,
+      "composite_score": 59.5
+    },
+    "coordinates_3d": {
+      "x": 5.6,
+      "y": 13.1,
+      "z": 3.1,
+      "radius": 20.8
+    },
+    "collaborators": [
+      "artist_045",
+      "artist_079",
+      "artist_002",
+      "artist_083",
+      "artist_036",
+      "artist_064"
+    ]
+  },
+  {
+    "artist_id": "artist_022",
+    "name": "작가22",
+    "alternativeName": "Artist22",
+    "birth_year": 1974,
+    "segment_id": "contemporary_media_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 70.9,
+      "acad_score": 67.1,
+      "media_score": 64,
+      "network_score": 64.3,
+      "composite_score": 66.8
+    },
+    "coordinates_3d": {
+      "x": 12.5,
+      "y": 10.3,
+      "z": 8.4,
+      "radius": 22.9
+    },
+    "collaborators": [
+      "artist_027",
+      "artist_039",
+      "artist_048"
+    ]
+  },
+  {
+    "artist_id": "artist_023",
+    "name": "작가23",
+    "alternativeName": "Artist23",
+    "birth_year": 1964,
+    "segment_id": "contemporary_sculpture_KR",
+    "career_stage": "late",
+    "scores": {
+      "inst_score": 60.3,
+      "acad_score": 65,
+      "media_score": 56.6,
+      "network_score": 53,
+      "composite_score": 58.5
+    },
+    "coordinates_3d": {
+      "x": 6.2,
+      "y": 9,
+      "z": 3.9,
+      "radius": 20.6
+    },
+    "collaborators": [
+      "artist_026",
+      "artist_076",
+      "artist_080"
+    ]
+  },
+  {
+    "artist_id": "artist_024",
+    "name": "작가24",
+    "alternativeName": "Artist24",
+    "birth_year": 1979,
+    "segment_id": "contemporary_installation_KR",
+    "career_stage": "early",
+    "scores": {
+      "inst_score": 63.8,
+      "acad_score": 56.9,
+      "media_score": 62.7,
+      "network_score": 53.7,
+      "composite_score": 59.6
+    },
+    "coordinates_3d": {
+      "x": 8.3,
+      "y": 4.2,
+      "z": 7.6,
+      "radius": 20.7
+    },
+    "collaborators": [
+      "artist_005",
+      "artist_019"
+    ]
+  },
+  {
+    "artist_id": "artist_025",
+    "name": "작가25",
+    "alternativeName": "Artist25",
+    "birth_year": 1988,
+    "segment_id": "contemporary_monochrome_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 74.2,
+      "acad_score": 58.4,
+      "media_score": 55.6,
+      "network_score": 71.4,
+      "composite_score": 65.7
+    },
+    "coordinates_3d": {
+      "x": 14.5,
+      "y": 5,
+      "z": 3.4,
+      "radius": 24.3
+    },
+    "collaborators": [
+      "artist_093",
+      "artist_005",
+      "artist_100"
+    ]
+  },
+  {
+    "artist_id": "artist_026",
+    "name": "작가26",
+    "alternativeName": "Artist26",
+    "birth_year": 1970,
+    "segment_id": "contemporary_abstract_KR",
+    "career_stage": "late",
+    "scores": {
+      "inst_score": 63.5,
+      "acad_score": 60.1,
+      "media_score": 57,
+      "network_score": 50.9,
+      "composite_score": 58
+    },
+    "coordinates_3d": {
+      "x": 8.1,
+      "y": 6.1,
+      "z": 4.2,
+      "radius": 20.2
+    },
+    "collaborators": [
+      "artist_090",
+      "artist_003",
+      "artist_091",
+      "artist_028"
+    ]
+  },
+  {
+    "artist_id": "artist_027",
+    "name": "작가27",
+    "alternativeName": "Artist27",
+    "birth_year": 1988,
+    "segment_id": "contemporary_media_KR",
+    "career_stage": "early",
+    "scores": {
+      "inst_score": 58.7,
+      "acad_score": 69.7,
+      "media_score": 63.4,
+      "network_score": 59.8,
+      "composite_score": 62.4
+    },
+    "coordinates_3d": {
+      "x": 5.2,
+      "y": 11.8,
+      "z": 8.1,
+      "radius": 22
+    },
+    "collaborators": [
+      "artist_017",
+      "artist_001",
+      "artist_081",
+      "artist_013",
+      "artist_072",
+      "artist_023"
+    ]
+  },
+  {
+    "artist_id": "artist_028",
+    "name": "작가28",
+    "alternativeName": "Artist28",
+    "birth_year": 1972,
+    "segment_id": "contemporary_sculpture_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 72.5,
+      "acad_score": 67.8,
+      "media_score": 71.6,
+      "network_score": 73.2,
+      "composite_score": 71.5
+    },
+    "coordinates_3d": {
+      "x": 13.5,
+      "y": 10.7,
+      "z": 13,
+      "radius": 24.6
+    },
+    "collaborators": [
+      "artist_020",
+      "artist_011",
+      "artist_066",
+      "artist_032"
+    ]
+  },
+  {
+    "artist_id": "artist_029",
+    "name": "작가29",
+    "alternativeName": "Artist29",
+    "birth_year": 1997,
+    "segment_id": "contemporary_installation_KR",
+    "career_stage": "late",
+    "scores": {
+      "inst_score": 59,
+      "acad_score": 63.7,
+      "media_score": 55.4,
+      "network_score": 67.8,
+      "composite_score": 61.2
+    },
+    "coordinates_3d": {
+      "x": 5.4,
+      "y": 8.2,
+      "z": 3.3,
+      "radius": 23.6
+    },
+    "collaborators": [
+      "artist_042",
+      "artist_026",
+      "artist_080",
+      "artist_025",
+      "artist_011"
+    ]
+  },
+  {
+    "artist_id": "artist_030",
+    "name": "작가30",
+    "alternativeName": "Artist30",
+    "birth_year": 1996,
+    "segment_id": "contemporary_monochrome_KR",
+    "career_stage": "early",
+    "scores": {
+      "inst_score": 58,
+      "acad_score": 66.7,
+      "media_score": 74.3,
+      "network_score": 56.4,
+      "composite_score": 63.4
+    },
+    "coordinates_3d": {
+      "x": 4.8,
+      "y": 10,
+      "z": 14.6,
+      "radius": 21.3
+    },
+    "collaborators": [
+      "artist_080",
+      "artist_051",
+      "artist_053",
+      "artist_086"
+    ]
+  },
+  {
+    "artist_id": "artist_031",
+    "name": "작가31",
+    "alternativeName": "Artist31",
+    "birth_year": 1995,
+    "segment_id": "contemporary_abstract_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 73.5,
+      "acad_score": 63.6,
+      "media_score": 64.9,
+      "network_score": 59.1,
+      "composite_score": 65.8
+    },
+    "coordinates_3d": {
+      "x": 14.1,
+      "y": 8.2,
+      "z": 8.9,
+      "radius": 21.8
+    },
+    "collaborators": [
+      "artist_001",
+      "artist_061",
+      "artist_027",
+      "artist_082"
+    ]
+  },
+  {
+    "artist_id": "artist_032",
+    "name": "작가32",
+    "alternativeName": "Artist32",
+    "birth_year": 1957,
+    "segment_id": "contemporary_media_KR",
+    "career_stage": "late",
+    "scores": {
+      "inst_score": 70.6,
+      "acad_score": 61.7,
+      "media_score": 71.4,
+      "network_score": 68.8,
+      "composite_score": 68.6
+    },
+    "coordinates_3d": {
+      "x": 12.4,
+      "y": 7,
+      "z": 12.8,
+      "radius": 23.8
+    },
+    "collaborators": [
+      "artist_047",
+      "artist_016"
+    ]
+  },
+  {
+    "artist_id": "artist_033",
+    "name": "작가33",
+    "alternativeName": "Artist33",
+    "birth_year": 1988,
+    "segment_id": "contemporary_sculpture_KR",
+    "career_stage": "early",
+    "scores": {
+      "inst_score": 56.7,
+      "acad_score": 68.9,
+      "media_score": 74.4,
+      "network_score": 57.8,
+      "composite_score": 63.8
+    },
+    "coordinates_3d": {
+      "x": 4,
+      "y": 11.3,
+      "z": 14.6,
+      "radius": 21.6
+    },
+    "collaborators": [
+      "artist_087",
+      "artist_082",
+      "artist_094",
+      "artist_045",
+      "artist_009",
+      "artist_018"
+    ]
+  },
+  {
+    "artist_id": "artist_034",
+    "name": "작가34",
+    "alternativeName": "Artist34",
+    "birth_year": 1974,
+    "segment_id": "contemporary_installation_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 64.1,
+      "acad_score": 55.4,
+      "media_score": 60.7,
+      "network_score": 55.6,
+      "composite_score": 59.4
+    },
+    "coordinates_3d": {
+      "x": 8.4,
+      "y": 3.2,
+      "z": 6.4,
+      "radius": 21.1
+    },
+    "collaborators": [
+      "artist_059",
+      "artist_047"
+    ]
+  },
+  {
+    "artist_id": "artist_035",
+    "name": "작가35",
+    "alternativeName": "Artist35",
+    "birth_year": 1950,
+    "segment_id": "contemporary_monochrome_KR",
+    "career_stage": "late",
+    "scores": {
+      "inst_score": 62.8,
+      "acad_score": 50.1,
+      "media_score": 56,
+      "network_score": 59.1,
+      "composite_score": 57.6
+    },
+    "coordinates_3d": {
+      "x": 7.7,
+      "y": 0.1,
+      "z": 3.6,
+      "radius": 21.8
+    },
+    "collaborators": [
+      "artist_015",
+      "artist_017",
+      "artist_084"
+    ]
+  },
+  {
+    "artist_id": "artist_036",
+    "name": "작가36",
+    "alternativeName": "Artist36",
+    "birth_year": 1955,
+    "segment_id": "contemporary_abstract_KR",
+    "career_stage": "early",
+    "scores": {
+      "inst_score": 48.8,
+      "acad_score": 46.1,
+      "media_score": 62.9,
+      "network_score": 56.7,
+      "composite_score": 53.8
+    },
+    "coordinates_3d": {
+      "x": -0.7,
+      "y": -2.3,
+      "z": 7.8,
+      "radius": 21.3
+    },
+    "collaborators": [
+      "artist_045",
+      "artist_037"
+    ]
+  },
+  {
+    "artist_id": "artist_037",
+    "name": "작가37",
+    "alternativeName": "Artist37",
+    "birth_year": 1986,
+    "segment_id": "contemporary_media_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 61.5,
+      "acad_score": 48.4,
+      "media_score": 45.2,
+      "network_score": 57.7,
+      "composite_score": 53.9
+    },
+    "coordinates_3d": {
+      "x": 6.9,
+      "y": -1,
+      "z": -2.9,
+      "radius": 21.5
+    },
+    "collaborators": [
+      "artist_082",
+      "artist_088",
+      "artist_029",
+      "artist_001",
+      "artist_003"
+    ]
+  },
+  {
+    "artist_id": "artist_038",
+    "name": "작가38",
+    "alternativeName": "Artist38",
+    "birth_year": 1961,
+    "segment_id": "contemporary_sculpture_KR",
+    "career_stage": "late",
+    "scores": {
+      "inst_score": 54.4,
+      "acad_score": 56.7,
+      "media_score": 58.1,
+      "network_score": 65.7,
+      "composite_score": 58.6
+    },
+    "coordinates_3d": {
+      "x": 2.6,
+      "y": 4,
+      "z": 4.9,
+      "radius": 23.1
+    },
+    "collaborators": [
+      "artist_047",
+      "artist_097"
+    ]
+  },
+  {
+    "artist_id": "artist_039",
+    "name": "작가39",
+    "alternativeName": "Artist39",
+    "birth_year": 1957,
+    "segment_id": "contemporary_installation_KR",
+    "career_stage": "early",
+    "scores": {
+      "inst_score": 49.7,
+      "acad_score": 46.3,
+      "media_score": 55.3,
+      "network_score": 53.2,
+      "composite_score": 51.3
+    },
+    "coordinates_3d": {
+      "x": -0.2,
+      "y": -2.2,
+      "z": 3.2,
+      "radius": 20.6
+    },
+    "collaborators": [
+      "artist_091",
+      "artist_021",
+      "artist_004",
+      "artist_006",
+      "artist_050"
+    ]
+  },
+  {
+    "artist_id": "artist_040",
+    "name": "작가40",
+    "alternativeName": "Artist40",
+    "birth_year": 1984,
+    "segment_id": "contemporary_monochrome_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 52.9,
+      "acad_score": 60.6,
+      "media_score": 59.5,
+      "network_score": 61.3,
+      "composite_score": 58.2
+    },
+    "coordinates_3d": {
+      "x": 1.8,
+      "y": 6.3,
+      "z": 5.7,
+      "radius": 22.3
+    },
+    "collaborators": [
+      "artist_037",
+      "artist_009",
+      "artist_034",
+      "artist_031",
+      "artist_007"
+    ]
+  },
+  {
+    "artist_id": "artist_041",
+    "name": "작가41",
+    "alternativeName": "Artist41",
+    "birth_year": 1950,
+    "segment_id": "contemporary_abstract_KR",
+    "career_stage": "late",
+    "scores": {
+      "inst_score": 46.7,
+      "acad_score": 46.2,
+      "media_score": 55.5,
+      "network_score": 44.2,
+      "composite_score": 48.2
+    },
+    "coordinates_3d": {
+      "x": -2,
+      "y": -2.3,
+      "z": 3.3,
+      "radius": 18.8
+    },
+    "collaborators": [
+      "artist_033",
+      "artist_086",
+      "artist_027",
+      "artist_008",
+      "artist_003",
+      "artist_076"
+    ]
+  },
+  {
+    "artist_id": "artist_042",
+    "name": "작가42",
+    "alternativeName": "Artist42",
+    "birth_year": 1980,
+    "segment_id": "contemporary_media_KR",
+    "career_stage": "early",
+    "scores": {
+      "inst_score": 64.5,
+      "acad_score": 50.6,
+      "media_score": 53.5,
+      "network_score": 64,
+      "composite_score": 58.8
+    },
+    "coordinates_3d": {
+      "x": 8.7,
+      "y": 0.4,
+      "z": 2.1,
+      "radius": 22.8
+    },
+    "collaborators": [
+      "artist_062",
+      "artist_013"
+    ]
+  },
+  {
+    "artist_id": "artist_043",
+    "name": "작가43",
+    "alternativeName": "Artist43",
+    "birth_year": 1972,
+    "segment_id": "contemporary_sculpture_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 48.9,
+      "acad_score": 61.9,
+      "media_score": 55.7,
+      "network_score": 63.5,
+      "composite_score": 56.9
+    },
+    "coordinates_3d": {
+      "x": -0.6,
+      "y": 7.1,
+      "z": 3.4,
+      "radius": 22.7
+    },
+    "collaborators": [
+      "artist_041",
+      "artist_052"
+    ]
+  },
+  {
+    "artist_id": "artist_044",
+    "name": "작가44",
+    "alternativeName": "Artist44",
+    "birth_year": 1979,
+    "segment_id": "contemporary_installation_KR",
+    "career_stage": "late",
+    "scores": {
+      "inst_score": 61.6,
+      "acad_score": 52.1,
+      "media_score": 48.6,
+      "network_score": 47.2,
+      "composite_score": 52.9
+    },
+    "coordinates_3d": {
+      "x": 7,
+      "y": 1.2,
+      "z": -0.8,
+      "radius": 19.4
+    },
+    "collaborators": [
+      "artist_003",
+      "artist_099",
+      "artist_056",
+      "artist_023"
+    ]
+  },
+  {
+    "artist_id": "artist_045",
+    "name": "작가45",
+    "alternativeName": "Artist45",
+    "birth_year": 1982,
+    "segment_id": "contemporary_monochrome_KR",
+    "career_stage": "early",
+    "scores": {
+      "inst_score": 59.2,
+      "acad_score": 52.4,
+      "media_score": 45.9,
+      "network_score": 53.4,
+      "composite_score": 53.1
+    },
+    "coordinates_3d": {
+      "x": 5.5,
+      "y": 1.4,
+      "z": -2.5,
+      "radius": 20.7
+    },
+    "collaborators": [
+      "artist_086",
+      "artist_032",
+      "artist_082",
+      "artist_084"
+    ]
+  },
+  {
+    "artist_id": "artist_046",
+    "name": "작가46",
+    "alternativeName": "Artist46",
+    "birth_year": 1988,
+    "segment_id": "contemporary_abstract_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 56,
+      "acad_score": 54,
+      "media_score": 55.2,
+      "network_score": 47.7,
+      "composite_score": 53.3
+    },
+    "coordinates_3d": {
+      "x": 3.6,
+      "y": 2.4,
+      "z": 3.1,
+      "radius": 19.5
+    },
+    "collaborators": [
+      "artist_023",
+      "artist_099",
+      "artist_051",
+      "artist_019"
+    ]
+  },
+  {
+    "artist_id": "artist_047",
+    "name": "작가47",
+    "alternativeName": "Artist47",
+    "birth_year": 1957,
+    "segment_id": "contemporary_media_KR",
+    "career_stage": "late",
+    "scores": {
+      "inst_score": 49.3,
+      "acad_score": 63.2,
+      "media_score": 56.6,
+      "network_score": 65.7,
+      "composite_score": 58
+    },
+    "coordinates_3d": {
+      "x": -0.4,
+      "y": 7.9,
+      "z": 4,
+      "radius": 23.1
+    },
+    "collaborators": [
+      "artist_061",
+      "artist_093",
+      "artist_082"
+    ]
+  },
+  {
+    "artist_id": "artist_048",
+    "name": "작가48",
+    "alternativeName": "Artist48",
+    "birth_year": 1957,
+    "segment_id": "contemporary_sculpture_KR",
+    "career_stage": "early",
+    "scores": {
+      "inst_score": 64.2,
+      "acad_score": 51.7,
+      "media_score": 63.8,
+      "network_score": 66.3,
+      "composite_score": 62.2
+    },
+    "coordinates_3d": {
+      "x": 8.5,
+      "y": 1,
+      "z": 8.3,
+      "radius": 23.3
+    },
+    "collaborators": [
+      "artist_009",
+      "artist_030",
+      "artist_027"
+    ]
+  },
+  {
+    "artist_id": "artist_049",
+    "name": "작가49",
+    "alternativeName": "Artist49",
+    "birth_year": 1988,
+    "segment_id": "contemporary_installation_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 59.5,
+      "acad_score": 46.1,
+      "media_score": 57.2,
+      "network_score": 57.2,
+      "composite_score": 55.6
+    },
+    "coordinates_3d": {
+      "x": 5.7,
+      "y": -2.3,
+      "z": 4.3,
+      "radius": 21.4
+    },
+    "collaborators": [
+      "artist_081",
+      "artist_072",
+      "artist_100"
+    ]
+  },
+  {
+    "artist_id": "artist_050",
+    "name": "작가50",
+    "alternativeName": "Artist50",
+    "birth_year": 1954,
+    "segment_id": "contemporary_monochrome_KR",
+    "career_stage": "late",
+    "scores": {
+      "inst_score": 59.8,
+      "acad_score": 52.1,
+      "media_score": 48.4,
+      "network_score": 51.7,
+      "composite_score": 53.4
+    },
+    "coordinates_3d": {
+      "x": 5.9,
+      "y": 1.3,
+      "z": -1,
+      "radius": 20.3
+    },
+    "collaborators": [
+      "artist_028",
+      "artist_081"
+    ]
+  },
+  {
+    "artist_id": "artist_051",
+    "name": "작가51",
+    "alternativeName": "Artist51",
+    "birth_year": 1969,
+    "segment_id": "contemporary_abstract_KR",
+    "career_stage": "early",
+    "scores": {
+      "inst_score": 64.8,
+      "acad_score": 48.7,
+      "media_score": 45.1,
+      "network_score": 59.8,
+      "composite_score": 55.4
+    },
+    "coordinates_3d": {
+      "x": 8.9,
+      "y": -0.8,
+      "z": -2.9,
+      "radius": 22
+    },
+    "collaborators": [
+      "artist_098",
+      "artist_025",
+      "artist_021"
+    ]
+  },
+  {
+    "artist_id": "artist_052",
+    "name": "작가52",
+    "alternativeName": "Artist52",
+    "birth_year": 1978,
+    "segment_id": "contemporary_media_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 42.4,
+      "acad_score": 38.4,
+      "media_score": 36.3,
+      "network_score": 36.9,
+      "composite_score": 38.7
+    },
+    "coordinates_3d": {
+      "x": -4.5,
+      "y": -6.9,
+      "z": -8.2,
+      "radius": 17.4
+    },
+    "collaborators": [
+      "artist_003",
+      "artist_032",
+      "artist_043",
+      "artist_069"
+    ]
+  },
+  {
+    "artist_id": "artist_053",
+    "name": "작가53",
+    "alternativeName": "Artist53",
+    "birth_year": 1988,
+    "segment_id": "contemporary_sculpture_KR",
+    "career_stage": "late",
+    "scores": {
+      "inst_score": 50.1,
+      "acad_score": 52.7,
+      "media_score": 53.1,
+      "network_score": 58.4,
+      "composite_score": 53.5
+    },
+    "coordinates_3d": {
+      "x": 0,
+      "y": 1.6,
+      "z": 1.9,
+      "radius": 21.7
+    },
+    "collaborators": [
+      "artist_099",
+      "artist_003",
+      "artist_034",
+      "artist_037",
+      "artist_095"
+    ]
+  },
+  {
+    "artist_id": "artist_054",
+    "name": "작가54",
+    "alternativeName": "Artist54",
+    "birth_year": 1992,
+    "segment_id": "contemporary_installation_KR",
+    "career_stage": "early",
+    "scores": {
+      "inst_score": 45.1,
+      "acad_score": 54.3,
+      "media_score": 40.7,
+      "network_score": 54.8,
+      "composite_score": 48.3
+    },
+    "coordinates_3d": {
+      "x": -2.9,
+      "y": 2.6,
+      "z": -5.6,
+      "radius": 21
+    },
+    "collaborators": [
+      "artist_051",
+      "artist_014",
+      "artist_058"
+    ]
+  },
+  {
+    "artist_id": "artist_055",
+    "name": "작가55",
+    "alternativeName": "Artist55",
+    "birth_year": 1989,
+    "segment_id": "contemporary_monochrome_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 46.5,
+      "acad_score": 41.8,
+      "media_score": 53.8,
+      "network_score": 52.1,
+      "composite_score": 48.8
+    },
+    "coordinates_3d": {
+      "x": -2.1,
+      "y": -4.9,
+      "z": 2.3,
+      "radius": 20.4
+    },
+    "collaborators": [
+      "artist_012",
+      "artist_091",
+      "artist_092"
+    ]
+  },
+  {
+    "artist_id": "artist_056",
+    "name": "작가56",
+    "alternativeName": "Artist56",
+    "birth_year": 1957,
+    "segment_id": "contemporary_abstract_KR",
+    "career_stage": "late",
+    "scores": {
+      "inst_score": 47.3,
+      "acad_score": 43.8,
+      "media_score": 50.6,
+      "network_score": 44.1,
+      "composite_score": 46.6
+    },
+    "coordinates_3d": {
+      "x": -1.6,
+      "y": -3.7,
+      "z": 0.4,
+      "radius": 18.8
+    },
+    "collaborators": [
+      "artist_047",
+      "artist_003",
+      "artist_083",
+      "artist_009"
+    ]
+  },
+  {
+    "artist_id": "artist_057",
+    "name": "작가57",
+    "alternativeName": "Artist57",
+    "birth_year": 1954,
+    "segment_id": "contemporary_media_KR",
+    "career_stage": "early",
+    "scores": {
+      "inst_score": 41.9,
+      "acad_score": 46,
+      "media_score": 51.3,
+      "network_score": 44.2,
+      "composite_score": 45.6
+    },
+    "coordinates_3d": {
+      "x": -4.9,
+      "y": -2.4,
+      "z": 0.8,
+      "radius": 18.8
+    },
+    "collaborators": [
+      "artist_061",
+      "artist_082",
+      "artist_035",
+      "artist_095",
+      "artist_064"
+    ]
+  },
+  {
+    "artist_id": "artist_058",
+    "name": "작가58",
+    "alternativeName": "Artist58",
+    "birth_year": 1953,
+    "segment_id": "contemporary_sculpture_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 39.6,
+      "acad_score": 40.3,
+      "media_score": 38,
+      "network_score": 33.4,
+      "composite_score": 37.8
+    },
+    "coordinates_3d": {
+      "x": -6.2,
+      "y": -5.8,
+      "z": -7.2,
+      "radius": 16.7
+    },
+    "collaborators": [
+      "artist_053",
+      "artist_044",
+      "artist_065"
+    ]
+  },
+  {
+    "artist_id": "artist_059",
+    "name": "작가59",
+    "alternativeName": "Artist59",
+    "birth_year": 1980,
+    "segment_id": "contemporary_installation_KR",
+    "career_stage": "late",
+    "scores": {
+      "inst_score": 39.4,
+      "acad_score": 42.6,
+      "media_score": 51,
+      "network_score": 49.1,
+      "composite_score": 45.4
+    },
+    "coordinates_3d": {
+      "x": -6.3,
+      "y": -4.5,
+      "z": 0.6,
+      "radius": 19.8
+    },
+    "collaborators": [
+      "artist_086",
+      "artist_067"
+    ]
+  },
+  {
+    "artist_id": "artist_060",
+    "name": "작가60",
+    "alternativeName": "Artist60",
+    "birth_year": 1965,
+    "segment_id": "contemporary_monochrome_KR",
+    "career_stage": "early",
+    "scores": {
+      "inst_score": 39.6,
+      "acad_score": 47.9,
+      "media_score": 53.3,
+      "network_score": 50.2,
+      "composite_score": 47.4
+    },
+    "coordinates_3d": {
+      "x": -6.2,
+      "y": -1.3,
+      "z": 2,
+      "radius": 20
+    },
+    "collaborators": [
+      "artist_040",
+      "artist_096",
+      "artist_079"
+    ]
+  },
+  {
+    "artist_id": "artist_061",
+    "name": "작가61",
+    "alternativeName": "Artist61",
+    "birth_year": 1991,
+    "segment_id": "contemporary_abstract_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 49.9,
+      "acad_score": 53.2,
+      "media_score": 35.1,
+      "network_score": 36.7,
+      "composite_score": 43.6
+    },
+    "coordinates_3d": {
+      "x": 0,
+      "y": 1.9,
+      "z": -8.9,
+      "radius": 17.3
+    },
+    "collaborators": [
+      "artist_050",
+      "artist_044"
+    ]
+  },
+  {
+    "artist_id": "artist_062",
+    "name": "작가62",
+    "alternativeName": "Artist62",
+    "birth_year": 1986,
+    "segment_id": "contemporary_media_KR",
+    "career_stage": "late",
+    "scores": {
+      "inst_score": 36.6,
+      "acad_score": 52,
+      "media_score": 43.4,
+      "network_score": 34.3,
+      "composite_score": 40.8
+    },
+    "coordinates_3d": {
+      "x": -8,
+      "y": 1.2,
+      "z": -4,
+      "radius": 16.9
+    },
+    "collaborators": [
+      "artist_046",
+      "artist_039"
+    ]
+  },
+  {
+    "artist_id": "artist_063",
+    "name": "작가63",
+    "alternativeName": "Artist63",
+    "birth_year": 1968,
+    "segment_id": "contemporary_sculpture_KR",
+    "career_stage": "early",
+    "scores": {
+      "inst_score": 35.4,
+      "acad_score": 35.9,
+      "media_score": 50.9,
+      "network_score": 33.1,
+      "composite_score": 38.8
+    },
+    "coordinates_3d": {
+      "x": -8.8,
+      "y": -8.5,
+      "z": 0.5,
+      "radius": 16.6
+    },
+    "collaborators": [
+      "artist_066",
+      "artist_036",
+      "artist_075",
+      "artist_076"
+    ]
+  },
+  {
+    "artist_id": "artist_064",
+    "name": "작가64",
+    "alternativeName": "Artist64",
+    "birth_year": 1969,
+    "segment_id": "contemporary_installation_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 53.5,
+      "acad_score": 44.2,
+      "media_score": 50.7,
+      "network_score": 48.1,
+      "composite_score": 49.6
+    },
+    "coordinates_3d": {
+      "x": 2.1,
+      "y": -3.5,
+      "z": 0.4,
+      "radius": 19.6
+    },
+    "collaborators": [
+      "artist_028",
+      "artist_077",
+      "artist_018",
+      "artist_080"
+    ]
+  },
+  {
+    "artist_id": "artist_065",
+    "name": "작가65",
+    "alternativeName": "Artist65",
+    "birth_year": 1997,
+    "segment_id": "contemporary_monochrome_KR",
+    "career_stage": "late",
+    "scores": {
+      "inst_score": 54.3,
+      "acad_score": 41.7,
+      "media_score": 40.3,
+      "network_score": 50.6,
+      "composite_score": 47.4
+    },
+    "coordinates_3d": {
+      "x": 2.6,
+      "y": -5,
+      "z": -5.8,
+      "radius": 20.1
+    },
+    "collaborators": [
+      "artist_036",
+      "artist_033",
+      "artist_071"
+    ]
+  },
+  {
+    "artist_id": "artist_066",
+    "name": "작가66",
+    "alternativeName": "Artist66",
+    "birth_year": 1980,
+    "segment_id": "contemporary_abstract_KR",
+    "career_stage": "early",
+    "scores": {
+      "inst_score": 50.1,
+      "acad_score": 49.7,
+      "media_score": 44.3,
+      "network_score": 50.5,
+      "composite_score": 48.7
+    },
+    "coordinates_3d": {
+      "x": 0.1,
+      "y": -0.2,
+      "z": -3.4,
+      "radius": 20.1
+    },
+    "collaborators": [
+      "artist_030",
+      "artist_072"
+    ]
+  },
+  {
+    "artist_id": "artist_067",
+    "name": "작가67",
+    "alternativeName": "Artist67",
+    "birth_year": 1971,
+    "segment_id": "contemporary_media_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 36.6,
+      "acad_score": 42.5,
+      "media_score": 48.7,
+      "network_score": 46.9,
+      "composite_score": 43.4
+    },
+    "coordinates_3d": {
+      "x": -8,
+      "y": -4.5,
+      "z": -0.8,
+      "radius": 19.4
+    },
+    "collaborators": [
+      "artist_041",
+      "artist_047",
+      "artist_085",
+      "artist_023",
+      "artist_048",
+      "artist_025"
+    ]
+  },
+  {
+    "artist_id": "artist_068",
+    "name": "작가68",
+    "alternativeName": "Artist68",
+    "birth_year": 1984,
+    "segment_id": "contemporary_sculpture_KR",
+    "career_stage": "late",
+    "scores": {
+      "inst_score": 36.4,
+      "acad_score": 43.9,
+      "media_score": 46.3,
+      "network_score": 44.5,
+      "composite_score": 42.4
+    },
+    "coordinates_3d": {
+      "x": -8.2,
+      "y": -3.6,
+      "z": -2.2,
+      "radius": 18.9
+    },
+    "collaborators": [
+      "artist_043",
+      "artist_069",
+      "artist_049",
+      "artist_097"
+    ]
+  },
+  {
+    "artist_id": "artist_069",
+    "name": "작가69",
+    "alternativeName": "Artist69",
+    "birth_year": 1970,
+    "segment_id": "contemporary_installation_KR",
+    "career_stage": "early",
+    "scores": {
+      "inst_score": 33.4,
+      "acad_score": 30.2,
+      "media_score": 43.6,
+      "network_score": 40.5,
+      "composite_score": 37.1
+    },
+    "coordinates_3d": {
+      "x": -10,
+      "y": -11.9,
+      "z": -3.8,
+      "radius": 18.1
+    },
+    "collaborators": [
+      "artist_066",
+      "artist_002",
+      "artist_045"
+    ]
+  },
+  {
+    "artist_id": "artist_070",
+    "name": "작가70",
+    "alternativeName": "Artist70",
+    "birth_year": 1977,
+    "segment_id": "contemporary_monochrome_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 40.7,
+      "acad_score": 27.5,
+      "media_score": 39.1,
+      "network_score": 37.9,
+      "composite_score": 36.9
+    },
+    "coordinates_3d": {
+      "x": -5.6,
+      "y": -13.5,
+      "z": -6.5,
+      "radius": 17.6
+    },
+    "collaborators": [
+      "artist_031",
+      "artist_030",
+      "artist_071"
+    ]
+  },
+  {
+    "artist_id": "artist_071",
+    "name": "작가71",
+    "alternativeName": "Artist71",
+    "birth_year": 1953,
+    "segment_id": "contemporary_abstract_KR",
+    "career_stage": "late",
+    "scores": {
+      "inst_score": 30.4,
+      "acad_score": 41.6,
+      "media_score": 39.6,
+      "network_score": 28.6,
+      "composite_score": 34.5
+    },
+    "coordinates_3d": {
+      "x": -11.7,
+      "y": -5,
+      "z": -6.2,
+      "radius": 15.7
+    },
+    "collaborators": [
+      "artist_061",
+      "artist_024",
+      "artist_059",
+      "artist_068",
+      "artist_083"
+    ]
+  },
+  {
+    "artist_id": "artist_072",
+    "name": "작가72",
+    "alternativeName": "Artist72",
+    "birth_year": 1967,
+    "segment_id": "contemporary_media_KR",
+    "career_stage": "early",
+    "scores": {
+      "inst_score": 33.5,
+      "acad_score": 28.9,
+      "media_score": 43.4,
+      "network_score": 38.8,
+      "composite_score": 36.3
+    },
+    "coordinates_3d": {
+      "x": -9.9,
+      "y": -12.7,
+      "z": -4,
+      "radius": 17.8
+    },
+    "collaborators": [
+      "artist_079",
+      "artist_070",
+      "artist_047",
+      "artist_034",
+      "artist_010",
+      "artist_083"
+    ]
+  },
+  {
+    "artist_id": "artist_073",
+    "name": "작가73",
+    "alternativeName": "Artist73",
+    "birth_year": 1960,
+    "segment_id": "contemporary_sculpture_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 42.9,
+      "acad_score": 36.3,
+      "media_score": 27,
+      "network_score": 38.4,
+      "composite_score": 36.5
+    },
+    "coordinates_3d": {
+      "x": -4.3,
+      "y": -8.2,
+      "z": -13.8,
+      "radius": 17.7
+    },
+    "collaborators": [
+      "artist_001",
+      "artist_052",
+      "artist_014",
+      "artist_087"
+    ]
+  },
+  {
+    "artist_id": "artist_074",
+    "name": "작가74",
+    "alternativeName": "Artist74",
+    "birth_year": 1969,
+    "segment_id": "contemporary_installation_KR",
+    "career_stage": "late",
+    "scores": {
+      "inst_score": 35.1,
+      "acad_score": 28.2,
+      "media_score": 43.4,
+      "network_score": 32.7,
+      "composite_score": 35.2
+    },
+    "coordinates_3d": {
+      "x": -8.9,
+      "y": -13.1,
+      "z": -3.9,
+      "radius": 16.5
+    },
+    "collaborators": [
+      "artist_084",
+      "artist_078",
+      "artist_030",
+      "artist_014",
+      "artist_073",
+      "artist_086"
+    ]
+  },
+  {
+    "artist_id": "artist_075",
+    "name": "작가75",
+    "alternativeName": "Artist75",
+    "birth_year": 1995,
+    "segment_id": "contemporary_monochrome_KR",
+    "career_stage": "early",
+    "scores": {
+      "inst_score": 44.3,
+      "acad_score": 38.8,
+      "media_score": 28.7,
+      "network_score": 38.6,
+      "composite_score": 37.9
+    },
+    "coordinates_3d": {
+      "x": -3.4,
+      "y": -6.7,
+      "z": -12.8,
+      "radius": 17.7
+    },
+    "collaborators": [
+      "artist_042",
+      "artist_068",
+      "artist_086",
+      "artist_037",
+      "artist_001"
+    ]
+  },
+  {
+    "artist_id": "artist_076",
+    "name": "작가76",
+    "alternativeName": "Artist76",
+    "birth_year": 1972,
+    "segment_id": "contemporary_abstract_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 29.7,
+      "acad_score": 37.3,
+      "media_score": 25.2,
+      "network_score": 34.2,
+      "composite_score": 31.2
+    },
+    "coordinates_3d": {
+      "x": -12.2,
+      "y": -7.6,
+      "z": -14.9,
+      "radius": 16.8
+    },
+    "collaborators": [
+      "artist_026",
+      "artist_040",
+      "artist_075"
+    ]
+  },
+  {
+    "artist_id": "artist_077",
+    "name": "작가77",
+    "alternativeName": "Artist77",
+    "birth_year": 1989,
+    "segment_id": "contemporary_media_KR",
+    "career_stage": "late",
+    "scores": {
+      "inst_score": 35.9,
+      "acad_score": 27.3,
+      "media_score": 44.4,
+      "network_score": 28.2,
+      "composite_score": 34.4
+    },
+    "coordinates_3d": {
+      "x": -8.5,
+      "y": -13.6,
+      "z": -3.4,
+      "radius": 15.6
+    },
+    "collaborators": [
+      "artist_006",
+      "artist_033",
+      "artist_016",
+      "artist_095",
+      "artist_081",
+      "artist_052"
+    ]
+  },
+  {
+    "artist_id": "artist_078",
+    "name": "작가78",
+    "alternativeName": "Artist78",
+    "birth_year": 1956,
+    "segment_id": "contemporary_sculpture_KR",
+    "career_stage": "early",
+    "scores": {
+      "inst_score": 42.9,
+      "acad_score": 39.1,
+      "media_score": 31.5,
+      "network_score": 39.1,
+      "composite_score": 38.3
+    },
+    "coordinates_3d": {
+      "x": -4.3,
+      "y": -6.5,
+      "z": -11.1,
+      "radius": 17.8
+    },
+    "collaborators": [
+      "artist_067",
+      "artist_033"
+    ]
+  },
+  {
+    "artist_id": "artist_079",
+    "name": "작가79",
+    "alternativeName": "Artist79",
+    "birth_year": 1974,
+    "segment_id": "contemporary_installation_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 33.7,
+      "acad_score": 42.2,
+      "media_score": 25.5,
+      "network_score": 36.7,
+      "composite_score": 34.1
+    },
+    "coordinates_3d": {
+      "x": -9.8,
+      "y": -4.7,
+      "z": -14.7,
+      "radius": 17.3
+    },
+    "collaborators": [
+      "artist_098",
+      "artist_093",
+      "artist_094",
+      "artist_019",
+      "artist_037",
+      "artist_056"
+    ]
+  },
+  {
+    "artist_id": "artist_080",
+    "name": "작가80",
+    "alternativeName": "Artist80",
+    "birth_year": 1968,
+    "segment_id": "contemporary_monochrome_KR",
+    "career_stage": "late",
+    "scores": {
+      "inst_score": 33.4,
+      "acad_score": 35.3,
+      "media_score": 36,
+      "network_score": 35.6,
+      "composite_score": 35
+    },
+    "coordinates_3d": {
+      "x": -10,
+      "y": -8.8,
+      "z": -8.4,
+      "radius": 17.1
+    },
+    "collaborators": [
+      "artist_019",
+      "artist_089",
+      "artist_044",
+      "artist_092",
+      "artist_022"
+    ]
+  },
+  {
+    "artist_id": "artist_081",
+    "name": "작가81",
+    "alternativeName": "Artist81",
+    "birth_year": 1959,
+    "segment_id": "contemporary_abstract_KR",
+    "career_stage": "early",
+    "scores": {
+      "inst_score": 43.1,
+      "acad_score": 44.5,
+      "media_score": 44.3,
+      "network_score": 39.8,
+      "composite_score": 42.8
+    },
+    "coordinates_3d": {
+      "x": -4.2,
+      "y": -3.3,
+      "z": -3.4,
+      "radius": 18
+    },
+    "collaborators": [
+      "artist_064",
+      "artist_097",
+      "artist_039"
+    ]
+  },
+  {
+    "artist_id": "artist_082",
+    "name": "작가82",
+    "alternativeName": "Artist82",
+    "birth_year": 1988,
+    "segment_id": "contemporary_media_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 44.6,
+      "acad_score": 33.3,
+      "media_score": 44.7,
+      "network_score": 47.8,
+      "composite_score": 43.2
+    },
+    "coordinates_3d": {
+      "x": -3.2,
+      "y": -10,
+      "z": -3.2,
+      "radius": 19.6
+    },
+    "collaborators": [
+      "artist_044",
+      "artist_077",
+      "artist_028",
+      "artist_064"
+    ]
+  },
+  {
+    "artist_id": "artist_083",
+    "name": "작가83",
+    "alternativeName": "Artist83",
+    "birth_year": 1989,
+    "segment_id": "contemporary_sculpture_KR",
+    "career_stage": "late",
+    "scores": {
+      "inst_score": 33.4,
+      "acad_score": 43,
+      "media_score": 31.8,
+      "network_score": 44.4,
+      "composite_score": 37.7
+    },
+    "coordinates_3d": {
+      "x": -10,
+      "y": -4.2,
+      "z": -10.9,
+      "radius": 18.9
+    },
+    "collaborators": [
+      "artist_077",
+      "artist_081"
+    ]
+  },
+  {
+    "artist_id": "artist_084",
+    "name": "작가84",
+    "alternativeName": "Artist84",
+    "birth_year": 1964,
+    "segment_id": "contemporary_installation_KR",
+    "career_stage": "early",
+    "scores": {
+      "inst_score": 41.1,
+      "acad_score": 30.3,
+      "media_score": 27.1,
+      "network_score": 30.9,
+      "composite_score": 32.9
+    },
+    "coordinates_3d": {
+      "x": -5.4,
+      "y": -11.8,
+      "z": -13.8,
+      "radius": 16.2
+    },
+    "collaborators": [
+      "artist_022",
+      "artist_072",
+      "artist_023",
+      "artist_051"
+    ]
+  },
+  {
+    "artist_id": "artist_085",
+    "name": "작가85",
+    "alternativeName": "Artist85",
+    "birth_year": 1977,
+    "segment_id": "contemporary_monochrome_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 39.5,
+      "acad_score": 26.1,
+      "media_score": 44,
+      "network_score": 31.5,
+      "composite_score": 35.9
+    },
+    "coordinates_3d": {
+      "x": -6.3,
+      "y": -14.3,
+      "z": -3.6,
+      "radius": 16.3
+    },
+    "collaborators": [
+      "artist_058",
+      "artist_027",
+      "artist_067",
+      "artist_011",
+      "artist_091",
+      "artist_003"
+    ]
+  },
+  {
+    "artist_id": "artist_086",
+    "name": "작가86",
+    "alternativeName": "Artist86",
+    "birth_year": 1962,
+    "segment_id": "contemporary_abstract_KR",
+    "career_stage": "late",
+    "scores": {
+      "inst_score": 20.7,
+      "acad_score": 37.7,
+      "media_score": 20.9,
+      "network_score": 20.6,
+      "composite_score": 24.1
+    },
+    "coordinates_3d": {
+      "x": -17.6,
+      "y": -7.4,
+      "z": -17.5,
+      "radius": 14.1
+    },
+    "collaborators": [
+      "artist_018",
+      "artist_015",
+      "artist_084",
+      "artist_022",
+      "artist_020"
+    ]
+  },
+  {
+    "artist_id": "artist_087",
+    "name": "작가87",
+    "alternativeName": "Artist87",
+    "birth_year": 1973,
+    "segment_id": "contemporary_media_KR",
+    "career_stage": "early",
+    "scores": {
+      "inst_score": 20.3,
+      "acad_score": 37.1,
+      "media_score": 30.8,
+      "network_score": 32.3,
+      "composite_score": 29.2
+    },
+    "coordinates_3d": {
+      "x": -17.8,
+      "y": -7.8,
+      "z": -11.5,
+      "radius": 16.5
+    },
+    "collaborators": [
+      "artist_066",
+      "artist_010",
+      "artist_031",
+      "artist_076",
+      "artist_092",
+      "artist_068"
+    ]
+  },
+  {
+    "artist_id": "artist_088",
+    "name": "작가88",
+    "alternativeName": "Artist88",
+    "birth_year": 1996,
+    "segment_id": "contemporary_sculpture_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 18.2,
+      "acad_score": 39.4,
+      "media_score": 38,
+      "network_score": 31.7,
+      "composite_score": 30.8
+    },
+    "coordinates_3d": {
+      "x": -19.1,
+      "y": -6.4,
+      "z": -7.2,
+      "radius": 16.3
+    },
+    "collaborators": [
+      "artist_047",
+      "artist_038",
+      "artist_025"
+    ]
+  },
+  {
+    "artist_id": "artist_089",
+    "name": "작가89",
+    "alternativeName": "Artist89",
+    "birth_year": 1975,
+    "segment_id": "contemporary_installation_KR",
+    "career_stage": "late",
+    "scores": {
+      "inst_score": 30.9,
+      "acad_score": 34.5,
+      "media_score": 32.3,
+      "network_score": 29.8,
+      "composite_score": 31.7
+    },
+    "coordinates_3d": {
+      "x": -11.5,
+      "y": -9.3,
+      "z": -10.6,
+      "radius": 16
+    },
+    "collaborators": [
+      "artist_061",
+      "artist_026",
+      "artist_049",
+      "artist_023",
+      "artist_088"
+    ]
+  },
+  {
+    "artist_id": "artist_090",
+    "name": "작가90",
+    "alternativeName": "Artist90",
+    "birth_year": 1989,
+    "segment_id": "contemporary_monochrome_KR",
+    "career_stage": "early",
+    "scores": {
+      "inst_score": 23.2,
+      "acad_score": 26.7,
+      "media_score": 32.6,
+      "network_score": 22.9,
+      "composite_score": 26.2
+    },
+    "coordinates_3d": {
+      "x": -16.1,
+      "y": -14,
+      "z": -10.4,
+      "radius": 14.6
+    },
+    "collaborators": [
+      "artist_006",
+      "artist_063",
+      "artist_059",
+      "artist_003",
+      "artist_016"
+    ]
+  },
+  {
+    "artist_id": "artist_091",
+    "name": "작가91",
+    "alternativeName": "Artist91",
+    "birth_year": 1976,
+    "segment_id": "contemporary_abstract_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 32.9,
+      "acad_score": 25.9,
+      "media_score": 21.9,
+      "network_score": 24,
+      "composite_score": 26.5
+    },
+    "coordinates_3d": {
+      "x": -10.3,
+      "y": -14.5,
+      "z": -16.8,
+      "radius": 14.8
+    },
+    "collaborators": [
+      "artist_053",
+      "artist_039",
+      "artist_026",
+      "artist_007",
+      "artist_024",
+      "artist_032"
+    ]
+  },
+  {
+    "artist_id": "artist_092",
+    "name": "작가92",
+    "alternativeName": "Artist92",
+    "birth_year": 1968,
+    "segment_id": "contemporary_media_KR",
+    "career_stage": "late",
+    "scores": {
+      "inst_score": 33.7,
+      "acad_score": 22.5,
+      "media_score": 20.8,
+      "network_score": 17.9,
+      "composite_score": 24.3
+    },
+    "coordinates_3d": {
+      "x": -9.8,
+      "y": -16.5,
+      "z": -17.5,
+      "radius": 13.6
+    },
+    "collaborators": [
+      "artist_017",
+      "artist_083",
+      "artist_013"
+    ]
+  },
+  {
+    "artist_id": "artist_093",
+    "name": "작가93",
+    "alternativeName": "Artist93",
+    "birth_year": 1976,
+    "segment_id": "contemporary_sculpture_KR",
+    "career_stage": "early",
+    "scores": {
+      "inst_score": 33.1,
+      "acad_score": 35.8,
+      "media_score": 23.9,
+      "network_score": 27.4,
+      "composite_score": 29.9
+    },
+    "coordinates_3d": {
+      "x": -10.1,
+      "y": -8.5,
+      "z": -15.6,
+      "radius": 15.5
+    },
+    "collaborators": [
+      "artist_065",
+      "artist_073"
+    ]
+  },
+  {
+    "artist_id": "artist_094",
+    "name": "작가94",
+    "alternativeName": "Artist94",
+    "birth_year": 1966,
+    "segment_id": "contemporary_installation_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 32.5,
+      "acad_score": 35.7,
+      "media_score": 31.9,
+      "network_score": 39,
+      "composite_score": 34.6
+    },
+    "coordinates_3d": {
+      "x": -10.5,
+      "y": -8.6,
+      "z": -10.9,
+      "radius": 17.8
+    },
+    "collaborators": [
+      "artist_057",
+      "artist_016",
+      "artist_047",
+      "artist_023"
+    ]
+  },
+  {
+    "artist_id": "artist_095",
+    "name": "작가95",
+    "alternativeName": "Artist95",
+    "birth_year": 1953,
+    "segment_id": "contemporary_monochrome_KR",
+    "career_stage": "late",
+    "scores": {
+      "inst_score": 29.1,
+      "acad_score": 22.4,
+      "media_score": 28.5,
+      "network_score": 17,
+      "composite_score": 24.6
+    },
+    "coordinates_3d": {
+      "x": -12.5,
+      "y": -16.6,
+      "z": -12.9,
+      "radius": 13.4
+    },
+    "collaborators": [
+      "artist_043",
+      "artist_014",
+      "artist_055",
+      "artist_022"
+    ]
+  },
+  {
+    "artist_id": "artist_096",
+    "name": "작가96",
+    "alternativeName": "Artist96",
+    "birth_year": 1962,
+    "segment_id": "contemporary_abstract_KR",
+    "career_stage": "early",
+    "scores": {
+      "inst_score": 31.6,
+      "acad_score": 35.3,
+      "media_score": 22.2,
+      "network_score": 35.4,
+      "composite_score": 30.9
+    },
+    "coordinates_3d": {
+      "x": -11.1,
+      "y": -8.8,
+      "z": -16.7,
+      "radius": 17.1
+    },
+    "collaborators": [
+      "artist_022",
+      "artist_023",
+      "artist_095",
+      "artist_028",
+      "artist_083"
+    ]
+  },
+  {
+    "artist_id": "artist_097",
+    "name": "작가97",
+    "alternativeName": "Artist97",
+    "birth_year": 1951,
+    "segment_id": "contemporary_media_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 25.4,
+      "acad_score": 31.4,
+      "media_score": 31.3,
+      "network_score": 39.1,
+      "composite_score": 31.5
+    },
+    "coordinates_3d": {
+      "x": -14.8,
+      "y": -11.2,
+      "z": -11.2,
+      "radius": 17.8
+    },
+    "collaborators": [
+      "artist_045",
+      "artist_074",
+      "artist_034",
+      "artist_042",
+      "artist_024",
+      "artist_060"
+    ]
+  },
+  {
+    "artist_id": "artist_098",
+    "name": "작가98",
+    "alternativeName": "Artist98",
+    "birth_year": 1998,
+    "segment_id": "contemporary_sculpture_KR",
+    "career_stage": "late",
+    "scores": {
+      "inst_score": 30,
+      "acad_score": 24.3,
+      "media_score": 35.6,
+      "network_score": 35.2,
+      "composite_score": 31.6
+    },
+    "coordinates_3d": {
+      "x": -12,
+      "y": -15.4,
+      "z": -8.6,
+      "radius": 17
+    },
+    "collaborators": [
+      "artist_064",
+      "artist_023",
+      "artist_011",
+      "artist_099"
+    ]
+  },
+  {
+    "artist_id": "artist_099",
+    "name": "작가99",
+    "alternativeName": "Artist99",
+    "birth_year": 1979,
+    "segment_id": "contemporary_installation_KR",
+    "career_stage": "early",
+    "scores": {
+      "inst_score": 27.2,
+      "acad_score": 28.2,
+      "media_score": 30.5,
+      "network_score": 37.7,
+      "composite_score": 30.8
+    },
+    "coordinates_3d": {
+      "x": -13.7,
+      "y": -13.1,
+      "z": -11.7,
+      "radius": 17.5
+    },
+    "collaborators": [
+      "artist_049",
+      "artist_054"
+    ]
+  },
+  {
+    "artist_id": "artist_100",
+    "name": "작가100",
+    "alternativeName": "Artist100",
+    "birth_year": 1987,
+    "segment_id": "contemporary_monochrome_KR",
+    "career_stage": "mid",
+    "scores": {
+      "inst_score": 29.4,
+      "acad_score": 21.5,
+      "media_score": 32.9,
+      "network_score": 33.2,
+      "composite_score": 29.6
+    },
+    "coordinates_3d": {
+      "x": -12.4,
+      "y": -17.1,
+      "z": -10.2,
+      "radius": 16.6
+    },
+    "collaborators": [
+      "artist_072",
+      "artist_040",
+      "artist_049",
+      "artist_027",
+      "artist_062"
+    ]
+  }
+]
