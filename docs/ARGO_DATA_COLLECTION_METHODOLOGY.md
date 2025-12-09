@@ -225,10 +225,11 @@ Firebase Functions 또는 Cloud Scheduler를 사용하여:
 ## 8. 참조 문서
 
 ### 8.1 데이터 소스 API
-- **`ARGO_DATA_SOURCE_APIS.md`**: 데이터 소스 API 상세 명세서
+- **`ARGO_API_COMPLETE_SPECIFICATION.md` Part II**: 데이터 소스 API 상세 명세서
   - 모든 외부 API 엔드포인트 및 인증 정보
   - API별 활용 목적 및 데이터 필드
   - 데이터 활용 인사이트
+  - 9개 API 상세 명세 통합
 
 ### 8.2 프로젝트 문서
 - `ARGO_SRD_Final.md` 섹션 3.2: 데이터 수집 및 정규화 프로세스

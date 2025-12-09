@@ -2,91 +2,150 @@ from typing import List, Optional, Dict, Any, Tuple
 from app.services.neo4j_service import neo4j_service
 from app.services.coordinate_service import calculate_coordinates
 from app.models.artist import Artist, Collaboration, InstitutionLink, ExhibitionLink
-from app.models.common import Scores, StructuralistAnalysis
+from app.models.common import Scores, StructuralistAnalysis, Coordinates3D
 from app.utils.errors import create_error_response
+from pydantic import ValidationError
+import logging
+
+logger = logging.getLogger(__name__)
 
 class ArtistService:
-    def _map_to_artist(self, data: dict) -> Artist:
+    def _map_to_artist(self, data: dict) -> Optional[Artist]:
         """
         Maps raw Neo4j result to Artist Pydantic model.
         Assumes data contains 'a' (Artist node) and optional relationships.
+        
+        Returns:
+            Artist 모델 인스턴스 또는 None (검증 실패 시)
         """
         node = data.get('a', {})
         artist_id = node.get('id') or node.get('artist_id')
         
-        # safely extract scores
-        scores = Scores(
-            inst_score=node.get('inst_score', 0.0),
-            acad_score=node.get('acad_score', 0.0),
-            media_score=node.get('media_score', 0.0),
-            network_score=node.get('network_score', 0.0),
-            composite_score=node.get('composite_score', 0.0),
-            composite_confidence=node.get('composite_confidence')
-        )
-        
-        coords = calculate_coordinates(scores)
-        
-        # Parse relationships
-        collaborations = [
-            Collaboration(artist_id=c['id'], strength=c['strength']) 
-            for c in data.get('collaborations', [])
-            if c.get('strength', 0) >= 0.3
-        ]
-        
-        institutions = [
-            InstitutionLink(institution_id=i['id'], name=i['name'], type=i.get('type'))
-            for i in data.get('institutions', [])
-        ]
-        
-        exhibitions = [
-            ExhibitionLink(exhibition_id=e['id'], name=e['name'], year=e.get('year'))
-            for e in data.get('exhibitions', [])
-        ]
+        try:
+            # safely extract scores
+            scores = Scores(
+                inst_score=node.get('inst_score', 0.0),
+                acad_score=node.get('acad_score', 0.0),
+                media_score=node.get('media_score', 0.0),
+                network_score=node.get('network_score', 0.0),
+                composite_score=node.get('composite_score', 0.0),
+                composite_confidence=node.get('composite_confidence')
+            )
+            
+            # coordinates_3d: Neo4j에서 객체로 저장된 경우 그대로 사용, 없으면 계산
+            coords_data = node.get('coordinates_3d')
+            if coords_data and isinstance(coords_data, dict):
+                coords = coords_data
+            else:
+                coords = calculate_coordinates(scores)
+            
+            # Parse relationships
+            collaborations = []
+            for c in data.get('collaborations', []):
+                try:
+                    if c.get('strength', 0) >= 0.3:
+                        collaborations.append(Collaboration(artist_id=c['id'], strength=c['strength']))
+                except ValidationError as e:
+                    logger.warning(f"Collaboration 검증 실패 (artist_id={artist_id}): {e.errors()}")
+                    continue
+            
+            institutions = []
+            for i in data.get('institutions', []):
+                try:
+                    institutions.append(InstitutionLink(institution_id=i['id'], name=i['name'], type=i.get('type')))
+                except ValidationError as e:
+                    logger.warning(f"InstitutionLink 검증 실패 (artist_id={artist_id}): {e.errors()}")
+                    continue
+            
+            exhibitions = []
+            for e in data.get('exhibitions', []):
+                try:
+                    exhibitions.append(ExhibitionLink(exhibition_id=e['id'], name=e['name'], year=e.get('year')))
+                except ValidationError as e:
+                    logger.warning(f"ExhibitionLink 검증 실패 (artist_id={artist_id}): {e.errors()}")
+                    continue
 
-        full_id = f"argo://artist/{artist_id}"
+            full_id = f"argo://artist/{artist_id}"
 
-        # Structuralist Analysis
-        analysis_data = node.get('structuralist_analysis', {})
-        # If stored as JSON string in Neo4j, might need parsing, assuming dict for now or constructed
-        # Constructing default if missing since it's Optional but logic might require it
-        structuralist_analysis = StructuralistAnalysis(
-            dominant_capital=node.get('dominant_capital', 'institutional'),
-            capital_composition=node.get('capital_composition', {}),
-            structural_position=node.get('structural_position', {}),
-            algorithm_version=node.get('algorithm_version', 'v1.0.0'),
-            weights_applied=node.get('weights_applied', {}),
-            theoretical_basis=node.get('theoretical_basis', 'Bourdieu Field Theory')
-        )
+            # Structuralist Analysis
+            # Neo4j에서 직접 필드로 저장된 경우와 객체로 저장된 경우 모두 처리
+            analysis_data = node.get('structuralist_analysis', {})
+            
+            # capital_composition: Neo4j에서 MAP으로 저장되거나 객체로 저장됨
+            capital_comp = node.get('capital_composition') or analysis_data.get('capital_composition', {})
+            if isinstance(capital_comp, dict):
+                # Neo4j MAP 형식을 Pydantic이 기대하는 형식으로 변환
+                capital_comp_normalized = {
+                    "institutional_ratio": capital_comp.get("institutional", 0.0),
+                    "academic_ratio": capital_comp.get("academic", 0.0),
+                    "media_ratio": capital_comp.get("media", 0.0),
+                    "network_ratio": capital_comp.get("network", 0.0)
+                }
+            else:
+                capital_comp_normalized = {}
+            
+            # structural_position: field_quadrant, community_id 포함
+            structural_pos = node.get('structural_position') or analysis_data.get('structural_position', {})
+            if not isinstance(structural_pos, dict):
+                structural_pos = {}
+            
+            structural_pos_normalized = {
+                "field_quadrant": node.get('field_quadrant') or structural_pos.get('field_quadrant', 'Q4_emerging'),
+                "community_id": node.get('community_id') or structural_pos.get('community_id'),
+                "position_stability": structural_pos.get('position_stability'),
+                "mobility_potential": structural_pos.get('mobility_potential')
+            }
+            
+            structuralist_analysis = StructuralistAnalysis(
+                dominant_capital=node.get('dominant_capital') or analysis_data.get('dominant_capital', 'institutional'),
+                capital_composition=capital_comp_normalized,
+                structural_position=structural_pos_normalized,
+                algorithm_version=node.get('algorithm_version') or analysis_data.get('algorithm_version', 'v1.0.0'),
+                weights_applied=node.get('weights_applied') or analysis_data.get('weights_applied', {
+                    'inst': 0.30, 'acad': 0.20, 'media': 0.25, 'network': 0.25
+                }),
+                theoretical_basis=node.get('theoretical_basis') or analysis_data.get('theoretical_basis', 'Bourdieu Field Theory + Meta-Analysis')
+            )
 
-        return Artist(
-            id=full_id,
-            type="Person",
-            identifier={"@type": "PropertyValue", "value": artist_id},
-            name=node.get('name', 'Unknown'),
-            # Populate both for compatibility
-            alternateName=node.get('name_ko') or node.get('alternateName'),
-            alternativeName=node.get('name_ko') or node.get('alternateName'),
-            
-            birthDate=node.get('birthDate') or (f"{node.get('birth_year')}-01-01" if node.get('birth_year') else None),
-            url=node.get('url'),
-            
-            segment_id=node.get('segment_id'),
-            career_stage=node.get('career_stage'),
-            
-            scores=scores,
-            # Init Coordinates3D model from dict
-            coordinates_3d=Coordinates3D(**coords),
-            structuralist_analysis=structuralist_analysis,
-            
-            collaborations=collaborations,
-            institutions=institutions,
-            exhibitions=exhibitions,
-            
-            # Legacy/Frontend comp
-            birth_year=node.get('birth_year'),
-            artist_id=artist_id,
-            collaborators=[c.artist_id for c in collaborations]
-        )
+            return Artist(
+                id=full_id,
+                type="Person",
+                identifier={"@type": "PropertyValue", "value": artist_id},
+                name=node.get('name', 'Unknown'),
+                # Populate both for compatibility
+                alternateName=node.get('name_ko') or node.get('alternateName'),
+                alternativeName=node.get('name_ko') or node.get('alternateName'),
+                
+                birthDate=node.get('birthDate') or (f"{node.get('birth_year')}-01-01" if node.get('birth_year') else None),
+                url=node.get('url'),
+                
+                segment_id=node.get('segment_id'),
+                career_stage=node.get('career_stage'),
+                
+                scores=scores,
+                # Init Coordinates3D model from dict (Neo4j에서 객체로 저장된 경우 그대로 사용)
+                coordinates_3d=Coordinates3D(**coords) if isinstance(coords, dict) else Coordinates3D(**calculate_coordinates(scores)),
+                structuralist_analysis=structuralist_analysis,
+                
+                collaborations=collaborations,
+                institutions=institutions,
+                exhibitions=exhibitions,
+                
+                # Legacy/Frontend comp
+                birth_year=node.get('birth_year'),
+                artist_id=artist_id,
+                collaborators=[c.artist_id for c in collaborations]
+            )
+        except ValidationError as e:
+            logger.error(f"Artist 모델 검증 실패 (artist_id={artist_id}): {e.errors()}")
+            import traceback
+            logger.error(traceback.format_exc())
+            return None
+        except Exception as e:
+            logger.error(f"Artist 매핑 중 오류 발생 (artist_id={artist_id}): {e}")
+            import traceback
+            logger.error(traceback.format_exc())
+            return None
 
     async def get_all_artists(self, limit: int = 20, skip: int = 0) -> List[Artist]:
         query = """
@@ -98,7 +157,9 @@ class ArtistService:
         
         # For list view, we might not need deep relationships to save perf, 
         # but requirements say coordinates are needed, so we at least need scores (on node).
-        return [self._map_to_artist(r) for r in results]
+        artists = [self._map_to_artist(r) for r in results]
+        # None 값 필터링 (검증 실패 데이터 제외)
+        return [a for a in artists if a is not None]
 
     async def get_artist_by_id(self, artist_id: str) -> Optional[Artist]:
         """
@@ -268,6 +329,8 @@ class ArtistService:
         LIMIT 20
         """
         results = neo4j_service.execute_query(cypher, params)
-        return [self._map_to_artist(r) for r in results]
+        artists = [self._map_to_artist(r) for r in results]
+        # None 값 필터링 (검증 실패 데이터 제외)
+        return [a for a in artists if a is not None]
 
 artist_service = ArtistService()

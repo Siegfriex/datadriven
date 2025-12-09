@@ -11,15 +11,15 @@ router = APIRouter(
     tags=["artists"]
 )
 
-@router.get("", response_model=dict)
+@router.get("", response_model=List[Artist])
 async def get_artists(
     limit: int = Query(20, ge=1, le=100),
     skip: int = Query(0, ge=0)
 ):
     artists = await artist_service.get_all_artists(limit, skip)
-    return to_jsonld([a.model_dump(by_alias=True) for a in artists])
+    return [a.model_dump(by_alias=True) for a in artists]
 
-@router.get("/{artist_id}", response_model=dict)
+@router.get("/{artist_id}", response_model=Artist)
 async def get_artist_detail(
     artist_id: str = Path(..., description=" The ID of the artist to retrieve")
 ):
@@ -31,11 +31,7 @@ async def get_artist_detail(
             status_code=404
         )
     
-    return to_jsonld(
-        artist.model_dump(by_alias=True), 
-        type_name="Person",
-        id_uri=artist.id
-    )
+    return artist.model_dump(by_alias=True)
 
 @router.get("/{artist_id}/artworks", response_model=dict)
 async def get_artist_artworks(artist_id: str):
@@ -61,10 +57,10 @@ class SearchRequest(BaseModel):
     query: str
     filters: Optional[Dict[str, Any]] = None
 
-@router.post("/search", response_model=dict)
+@router.post("/search", response_model=List[Artist])
 async def search_artists(request: SearchRequest):
     results = await artist_service.search_artists(request.query, request.filters)
-    return to_jsonld([a.model_dump(by_alias=True) for a in results])
+    return [a.model_dump(by_alias=True) for a in results]
 
 @router.get("/{artist_id}/network", response_model=dict)
 async def get_artist_network(artist_id: str):

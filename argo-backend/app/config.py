@@ -14,6 +14,10 @@ class Settings(BaseSettings):
     ARKO_API_KEY: str | None = None
     ARKO_SERVICE_KEY: str | None = None
     
+    # MMCA API (한국문화정보원 KCISA)
+    MMCA_RESIDENCY_SERVICE_KEY: str | None = None
+    MMCA_COLLECTION_SERVICE_KEY: str | None = None
+    
     # CORS Settings
     ALLOWED_ORIGINS: list[str] = [
         "https://artdrive1208.web.app",

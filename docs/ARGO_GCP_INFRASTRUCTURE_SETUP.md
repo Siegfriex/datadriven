@@ -350,6 +350,10 @@ Cloud Run (백엔드 API)
 | `NEO4J_PASSWORD` | Neo4j 비밀번호 | Cloud Run 서비스 계정 |
 | `REDIS_HOST` | Cloud Memorystore 호스트 | Cloud Run 서비스 계정 |
 | `REDIS_PORT` | Cloud Memorystore 포트 | Cloud Run 서비스 계정 |
+| `ARKO_API_KEY` | ARKO API 키 (공공데이터포털) | Cloud Run 서비스 계정 |
+| `ARKO_SERVICE_KEY` | ARKO 서비스키 (공공데이터포털) | Cloud Run 서비스 계정 |
+| `MMCA_RESIDENCY_SERVICE_KEY` | MMCA 레지던시작가소식 API 서비스키 | Cloud Run 서비스 계정 |
+| `MMCA_COLLECTION_SERVICE_KEY` | MMCA 소장작품 API 서비스키 | Cloud Run 서비스 계정 |
 
 ### 6.2 Secret Manager 설정 명령어
 
@@ -365,6 +369,12 @@ export SERVICE_ACCOUNT="argo-api@artdrive1208.iam.gserviceaccount.com"
 gcloud secrets add-iam-policy-binding GEMINI_API_KEY \
     --member="serviceAccount:${SERVICE_ACCOUNT}" \
     --role="roles/secretmanager.secretAccessor"
+
+# ARKO API 서비스키 시크릿 생성 (PowerShell 스크립트 사용 권장)
+.\scripts\update-secrets-arko.ps1
+
+# MMCA API 서비스키 시크릿 생성 (PowerShell 스크립트 사용 권장)
+.\scripts\update-secrets-mmca.ps1
 ```
 
 ---

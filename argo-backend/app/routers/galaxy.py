@@ -1,14 +1,33 @@
 from fastapi import APIRouter, Query
 from typing import Dict, Any, List
 from datetime import datetime
+from pydantic import BaseModel, Field
 from app.services.neo4j_service import neo4j_service
 from app.services.artist_service import artist_service
+from app.models.artist import Artist
+from app.models.entities import Cluster
 from app.utils.jsonld import to_jsonld
 from app.utils.errors import create_error_response
 
 router = APIRouter(tags=["galaxy"])
 
-@router.get("/v1/api/galaxy-snapshot", response_model=Dict[str, Any])
+class PageMetadata(BaseModel):
+    limit: int
+    skip: int
+    has_more: bool
+
+class GalaxyMetadata(BaseModel):
+    version: str
+    timestamp: str
+    total_artists: int
+    page: PageMetadata
+
+class GalaxySnapshot(BaseModel):
+    artists: List[Dict[str, Any]]  # Artist 모델의 dict 표현
+    clusters: List[Dict[str, Any]]  # Cluster 모델의 dict 표현
+    metadata: GalaxyMetadata
+
+@router.get("/v1/api/galaxy-snapshot", response_model=GalaxySnapshot)
 async def get_galaxy_snapshot(
     limit: int = Query(100, ge=1, le=1000), 
     skip: int = Query(0, ge=0)
@@ -38,7 +57,7 @@ async def get_galaxy_snapshot(
         for r in cluster_results
     ]
 
-    return to_jsonld({
+    return {
         "artists": [a.model_dump(by_alias=True) for a in artists],
         "clusters": clusters,
         "metadata": {
@@ -51,7 +70,7 @@ async def get_galaxy_snapshot(
                 "has_more": (skip + limit) < total_artists
             }
         }
-    }, type_name="GalaxySnapshot")
+    }
 
 @router.get("/v1/api/metadata/sources", response_model=Dict[str, Any])
 async def get_metadata_sources():

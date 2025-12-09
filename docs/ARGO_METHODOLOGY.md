@@ -75,13 +75,16 @@ Represents legitimacy conferred by established art institutions.
 
 **Operationalization:**
 ```
-inst_score = normalize(
-    museum_exhibitions × 3.5 +
-    biennale_participation × 4.0 +
-    public_support_count × 2.0 +
-    residency_count × 1.5
-)
+inst_score = min(max(
+    (museum_exhibitions × 20) +
+    (biennale_participation × 30) +
+    (public_support_count × 10) +
+    (residency_count × 10),
+    0.0
+), 100.0)
 ```
+
+**Note:** 실제 구현에서는 normalize 함수 대신 직접 계산 후 범위 제한(0-100)을 적용합니다.
 
 #### 1.2.2 Academic Capital (학술 자본)
 

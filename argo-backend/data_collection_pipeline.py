@@ -80,12 +80,12 @@ class DataCollectionPipeline:
             service_key=settings.ARKO_SERVICE_KEY
         )
         # MMCA 레지던시 API는 별도 키 사용
-        mmca_residency_key = os.getenv("MMCA_RESIDENCY_SERVICE_KEY", "0cc9c852-cd3b-417c-91b4-15722d964013")
+        mmca_residency_key = settings.MMCA_RESIDENCY_SERVICE_KEY or "0cc9c852-cd3b-417c-91b4-15722d964013"
         self.mmca_residency_collector = MMCAResidencyCollector(
             service_key=mmca_residency_key
         )
         # MMCA 소장작품 API는 별도 키 사용
-        mmca_collection_key = os.getenv("MMCA_COLLECTION_SERVICE_KEY", "c080ac2b-93ba-4300-af2d-8cc0ff71dda7")
+        mmca_collection_key = settings.MMCA_COLLECTION_SERVICE_KEY or "c080ac2b-93ba-4300-af2d-8cc0ff71dda7"
         self.mmca_collection_collector = MMCACollectionCollector(
             service_key=mmca_collection_key
         )
@@ -183,10 +183,18 @@ class DataCollectionPipeline:
         
         # Step 4: 데이터 검증
         logger.info("=" * 60)
-        logger.info("Step 4: 데이터 검증 시작")
+        logger.info("Step 4: 데이터 검증 시작 (Pydantic 모델 검증)")
         logger.info("=" * 60)
         validated_artists, failed_artists = self._validate_data(scored_artists)
         logger.info(f"검증 완료: 통과 {len(validated_artists)}명, 실패 {len(failed_artists)}명")
+        
+        # 검증 실패 데이터 저장 (디버깅용)
+        if failed_artists:
+            failed_file = f"data/validation_failed_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+            os.makedirs("data", exist_ok=True)
+            with open(failed_file, "w", encoding="utf-8") as f:
+                json.dump(failed_artists, f, ensure_ascii=False, indent=2)
+            logger.warning(f"검증 실패 데이터 저장: {failed_file}")
         
         # Step 5: 최종 검증 (신뢰도 0.60 이상만)
         logger.info("=" * 60)
@@ -207,8 +215,28 @@ class DataCollectionPipeline:
             logger.info("=" * 60)
             logger.info("Step 6: Neo4j 업로드 시작")
             logger.info("=" * 60)
+            
+            # 6.1: Artist 노드 업로드
+            logger.info("6.1: Artist 노드 업로드 중...")
             upload_result = self._upload_to_neo4j(final_artists)
-            logger.info(f"업로드 완료: 성공 {upload_result['success']}명, 실패 {upload_result['failed']}명")
+            logger.info(f"Artist 업로드 완료: 성공 {upload_result['success']}명, 실패 {upload_result['failed']}명")
+            
+            # 6.2: Institution 노드 업로드
+            logger.info("6.2: Institution 노드 업로드 중...")
+            if raw_institutions:
+                inst_result = self._upload_institutions_to_neo4j(raw_institutions)
+                logger.info(f"Institution 업로드 완료: 성공 {inst_result['success']}개, 실패 {inst_result['failed']}개")
+            
+            # 6.3: Exhibition 노드 업로드 (비엔날레 데이터에서)
+            logger.info("6.3: Exhibition 노드 업로드 중...")
+            if raw_biennale_works:
+                exh_result = self._upload_exhibitions_to_neo4j(raw_biennale_works)
+                logger.info(f"Exhibition 업로드 완료: 성공 {exh_result['success']}개, 실패 {exh_result['failed']}개")
+            
+            # 6.4: 관계 생성 (선택사항, 향후 확장)
+            # TODO: KCI 공동저자 관계, 작가-기관 관계, 작가-전시 관계 생성
+            logger.info("6.4: 관계 생성은 향후 구현 예정")
+            
         else:
             logger.info("=" * 60)
             logger.info("Step 6: Neo4j 업로드 건너뜀 (dry_run 모드)")
@@ -585,8 +613,121 @@ class DataCollectionPipeline:
         return scored
     
     def _validate_data(self, artists: List[Dict]) -> tuple[List[Dict], List[Dict]]:
-        """Step 4: 데이터 검증"""
-        return self.validator.validate_batch(artists)
+        """Step 4: 데이터 검증 (Pydantic 모델 사용)"""
+        from app.models.artist import Artist
+        from app.models.common import Scores, Coordinates3D, StructuralistAnalysis
+        from app.services.coordinate_service import calculate_coordinates
+        from pydantic import ValidationError
+        
+        passed = []
+        failed = []
+        
+        for artist_data in artists:
+            try:
+                # 1. Scores 모델 검증
+                scores = Scores(
+                    inst_score=artist_data.get("inst_score", 0.0),
+                    acad_score=artist_data.get("acad_score", 0.0),
+                    media_score=artist_data.get("media_score", 0.0),
+                    network_score=artist_data.get("network_score", 0.0),
+                    composite_score=artist_data.get("composite_score", 0.0),
+                    composite_confidence=artist_data.get("composite_confidence") or artist_data.get("confidence_score")
+                )
+                
+                # 2. Coordinates3D 모델 검증 (좌표 계산)
+                coords = calculate_coordinates(scores)
+                coordinates_3d = Coordinates3D(**coords)
+                
+                # 3. StructuralistAnalysis 모델 검증 (있는 경우)
+                structuralist_analysis = None
+                if artist_data.get("structuralist_analysis") or artist_data.get("dominant_capital"):
+                    # capital_composition 정규화
+                    capital_comp = artist_data.get("capital_composition", {})
+                    if isinstance(capital_comp, dict):
+                        capital_comp_normalized = {
+                            "institutional_ratio": capital_comp.get("institutional", capital_comp.get("institutional_ratio", 0.0)),
+                            "academic_ratio": capital_comp.get("academic", capital_comp.get("academic_ratio", 0.0)),
+                            "media_ratio": capital_comp.get("media", capital_comp.get("media_ratio", 0.0)),
+                            "network_ratio": capital_comp.get("network", capital_comp.get("network_ratio", 0.0))
+                        }
+                    else:
+                        capital_comp_normalized = {}
+                    
+                    # structural_position 정규화
+                    structural_pos = artist_data.get("structural_position", {})
+                    if not isinstance(structural_pos, dict):
+                        structural_pos = {}
+                    
+                    structural_pos_normalized = {
+                        "field_quadrant": artist_data.get("field_quadrant") or structural_pos.get("field_quadrant", "Q4_emerging"),
+                        "community_id": artist_data.get("community_id") or structural_pos.get("community_id"),
+                        "position_stability": structural_pos.get("position_stability"),
+                        "mobility_potential": structural_pos.get("mobility_potential")
+                    }
+                    
+                    structuralist_analysis = StructuralistAnalysis(
+                        dominant_capital=artist_data.get("dominant_capital", "institutional"),
+                        capital_composition=capital_comp_normalized,
+                        structural_position=structural_pos_normalized,
+                        algorithm_version=artist_data.get("algorithm_version", "v1.0.0"),
+                        weights_applied=artist_data.get("weights_applied", {
+                            "inst": 0.30, "acad": 0.20, "media": 0.25, "network": 0.25
+                        }),
+                        theoretical_basis=artist_data.get("theoretical_basis", "Bourdieu Field Theory + Meta-Analysis")
+                    )
+                
+                # 4. identifier 준비
+                identifier_data = artist_data.get("identifier")
+                if isinstance(identifier_data, dict):
+                    identifier = identifier_data
+                else:
+                    # identifier가 없으면 artist_id로 생성
+                    artist_id = artist_data.get("artist_id") or artist_data.get("id", "").replace("argo://artist/", "")
+                    identifier = {"@type": "PropertyValue", "value": artist_id}
+                
+                # 5. Artist 모델 전체 검증
+                artist = Artist(
+                    id=artist_data.get("id", f"argo://artist/{artist_data.get('artist_id', 'unknown')}"),
+                    type="Person",
+                    identifier=identifier,
+                    name=artist_data.get("name", "Unknown"),
+                    alternateName=artist_data.get("alternateName"),
+                    alternativeName=artist_data.get("name_ko") or artist_data.get("alternateName"),
+                    birthDate=artist_data.get("birthDate"),
+                    url=artist_data.get("url"),
+                    segment_id=artist_data.get("segment_id"),
+                    career_stage=artist_data.get("career_stage"),
+                    birth_year=artist_data.get("birth_year"),
+                    artist_id=artist_data.get("artist_id"),
+                    scores=scores,
+                    coordinates_3d=coordinates_3d,
+                    structuralist_analysis=structuralist_analysis,
+                    collaborations=[],  # 관계는 별도 처리
+                    institutions=[],
+                    exhibitions=[],
+                    collaborators=[]
+                )
+                
+                # 검증 통과: Pydantic 모델을 dict로 변환하여 반환
+                validated_dict = artist.model_dump(by_alias=True)
+                # 원본 데이터의 추가 필드 유지 (Pydantic 모델에 없는 필드)
+                for key, value in artist_data.items():
+                    if key not in validated_dict:
+                        validated_dict[key] = value
+                passed.append(validated_dict)
+                
+            except ValidationError as e:
+                logger.warning(f"Pydantic 검증 실패 ({artist_data.get('name', 'Unknown')}):")
+                logger.warning(f"  오류: {e.errors()}")
+                failed.append(artist_data)
+            except Exception as e:
+                logger.error(f"검증 중 오류 발생 ({artist_data.get('name', 'Unknown')}): {e}")
+                import traceback
+                logger.error(traceback.format_exc())
+                failed.append(artist_data)
+        
+        logger.info(f"Pydantic 검증 완료: 통과 {len(passed)}명, 실패 {len(failed)}명")
+        return passed, failed
     
     def _final_validation(self, artists: List[Dict]) -> List[Dict]:
         """Step 5: 최종 검증 (신뢰도 0.50 이상만, ARKO는 기본 정보만 있어도 0.95 신뢰도)"""
@@ -596,8 +737,72 @@ class DataCollectionPipeline:
         ]
     
     def _upload_to_neo4j(self, artists: List[Dict]) -> Dict[str, int]:
-        """Step 6: Neo4j 업로드"""
+        """Step 6.1: Artist 노드 Neo4j 업로드"""
         return self.uploader.upload_artists(artists)
+    
+    def _upload_institutions_to_neo4j(self, institutions: List[Dict]) -> Dict[str, int]:
+        """Step 6.2: Institution 노드 Neo4j 업로드"""
+        success_count = 0
+        failed_count = 0
+        
+        for inst in institutions:
+            # 기본 정규화 (필요시 확장)
+            normalized_inst = {
+                "id": inst.get("id"),
+                "name": inst.get("단체명") or inst.get("name"),
+                "name_en": inst.get("name_en"),
+                "type": inst.get("type", "arts_group"),
+                "region": inst.get("region"),
+                "address": inst.get("address"),
+                "prestige_score": inst.get("prestige_score", 0.0),
+                "data_source": "ARKO",
+                "url": inst.get("관련페이지주소") or inst.get("url"),
+                "representative": inst.get("대표명") or inst.get("representative")
+            }
+            
+            if self.uploader.upload_institution(normalized_inst):
+                success_count += 1
+            else:
+                failed_count += 1
+        
+        return {
+            "success": success_count,
+            "failed": failed_count,
+            "total": len(institutions)
+        }
+    
+    def _upload_exhibitions_to_neo4j(self, biennale_works: List[Dict]) -> Dict[str, int]:
+        """Step 6.3: Exhibition 노드 Neo4j 업로드 (비엔날레 데이터에서)"""
+        success_count = 0
+        failed_count = 0
+        
+        # 비엔날레별로 그룹화하여 Exhibition 노드 생성
+        biennale_years = {}
+        for work in biennale_works:
+            year = work.get("year") or work.get("비엔날레연도")
+            if year:
+                if year not in biennale_years:
+                    biennale_years[year] = {
+                        "id": f"exh_cheongju_biennale_{year}",
+                        "title": f"청주공예비엔날레 {year}",
+                        "type": "biennale",
+                        "year": int(year) if isinstance(year, str) else year,
+                        "venue": "청주",
+                        "data_source": "CHEONGJU_BIENNALE"
+                    }
+                biennale_years[year]["participant_count"] = biennale_years[year].get("participant_count", 0) + 1
+        
+        for exh_data in biennale_years.values():
+            if self.uploader.upload_exhibition(exh_data):
+                success_count += 1
+            else:
+                failed_count += 1
+        
+        return {
+            "success": success_count,
+            "failed": failed_count,
+            "total": len(biennale_years)
+        }
 
 
 if __name__ == "__main__":

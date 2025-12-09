@@ -1,5 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import ValidationError
+from datetime import datetime
 from app.config import get_settings
 from app.middleware import ErrorHandlingMiddleware
 from app.routers import (
@@ -16,6 +19,25 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc"
 )
+
+# Pydantic ValidationError 전역 예외 핸들러
+@app.exception_handler(ValidationError)
+async def validation_exception_handler(request: Request, exc: ValidationError):
+    """
+    Pydantic 검증 오류를 표준화된 에러 응답으로 변환
+    """
+    return JSONResponse(
+        status_code=422,
+        content={
+            "error": {
+                "code": "VALIDATION_ERROR",
+                "message": "Data validation failed",
+                "details": exc.errors(),
+                "timestamp": datetime.utcnow().isoformat() + "Z",
+                "path": str(request.url.path)
+            }
+        }
+    )
 
 # Middleware
 app.add_middleware(ErrorHandlingMiddleware)

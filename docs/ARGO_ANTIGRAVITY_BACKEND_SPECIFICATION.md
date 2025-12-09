@@ -1373,6 +1373,147 @@ def test_cors_headers():
 
 ---
 
+---
+
+## 12. Antigravity IDE 디렉팅 가이드 (통합)
+
+본 섹션은 `ARGO_ANTIGRAVITY_DIRECTING_GUIDE.md`의 디렉팅 방법을 통합한 내용입니다.
+
+### 12.1 Antigravity IDE에 제공할 파일 목록
+
+#### 필수 제공 파일 (우선순위 순)
+
+**1순위: 핵심 명세서 파일**
+
+| 파일명 | 경로 | 용도 | 필수 여부 |
+|--------|------|------|----------|
+| **ARGO_ANTIGRAVITY_BACKEND_SPECIFICATION.md** | `docs/ARGO_ANTIGRAVITY_BACKEND_SPECIFICATION.md` | 백엔드 개발 가이드라인 (최우선 참조) | ✅ 필수 |
+| **ARGO_API_SPECIFICATION.yaml** | `docs/ARGO_API_SPECIFICATION.yaml` | OpenAPI 3.0 명세서 (API 스키마 정의) | ✅ 필수 |
+| **ARGO_Final_Schema.md** | `docs/ARGO_Final_Schema.md` | Neo4j 데이터베이스 스키마 정의 | ✅ 필수 |
+
+**2순위: 참조 문서 파일**
+
+| 파일명 | 경로 | 용도 | 필수 여부 |
+|--------|------|------|----------|
+| **ARGO_TSD_Final.md** | `docs/ARGO_TSD_Final.md` | 기술 명세서 (JSON-LD 형식, API 응답 규칙) | ⚠️ 권장 |
+| **ARGO_SRD_Final.md** | `docs/ARGO_SRD_Final.md` | 소프트웨어 요구사항 (기능 명세, KPI) | ⚠️ 권장 |
+| **types/argo.ts** | `types/argo.ts` | 프론트엔드 TypeScript 타입 정의 (타입 일치성 검증) | ⚠️ 권장 |
+
+### 12.2 단계별 지시 방법
+
+#### Phase 1: 프로젝트 초기화 및 설정
+
+1. **Antigravity IDE 프로젝트 생성**
+   - FastAPI 백엔드 프로젝트 생성
+   - Python 3.10 이상, FastAPI 프레임워크
+
+2. **OpenAPI 명세서 입력**
+   - `docs/ARGO_API_SPECIFICATION.yaml` 파일 입력
+   - OpenAPI 명세서를 파싱하여 모든 엔드포인트 인식
+   - Pydantic 모델 자동 생성
+   - FastAPI 라우터 자동 생성
+
+3. **핵심 가이드라인 문서 참조**
+   - `docs/ARGO_ANTIGRAVITY_BACKEND_SPECIFICATION.md` 최우선 참조
+   - `docs/ARGO_Final_Schema.md` Neo4j 스키마 확인
+   - `types/argo.ts` 프론트엔드 타입 확인
+
+#### Phase 2: 핵심 기능 구현
+
+1. **프로젝트 구조 생성**
+   - `app/models/`, `app/routers/`, `app/services/`, `app/utils/` 디렉토리 생성
+
+2. **의존성 설정**
+   - `requirements.txt` 생성 (FastAPI, Neo4j, Pydantic 등)
+
+3. **설정 관리 구현**
+   - `app/config.py` 환경변수 로드 (로컬: .env, 프로덕션: GCP Secret Manager)
+
+4. **Neo4j 데이터베이스 연결 구현**
+   - `app/database.py` Neo4j Aura Cloud 연결
+
+#### Phase 3: Pydantic 모델 구현
+
+1. **공통 모델 구현**
+   - `app/models/common.py` (Scores, Coordinates3D, StructuralistAnalysis 등)
+
+2. **Artist 모델 구현**
+   - `app/models/artist.py` (모든 필드 포함, 관계 데이터 포함)
+
+3. **기타 엔터티 모델 구현**
+   - Institution, Exhibition, Transaction, Cluster 모델
+
+#### Phase 4: JSON-LD 변환 미들웨어 구현
+
+1. **JSON-LD 변환 유틸리티 구현**
+   - `app/utils/jsonld.py` 모든 응답에 @context, @type, @id 필드 자동 추가
+
+2. **FastAPI 미들웨어 구현**
+   - `app/middleware.py` JSON-LD 변환, CORS, 에러 처리 미들웨어
+
+#### Phase 5: 좌표 계산 로직 구현
+
+1. **좌표 계산 서비스 구현**
+   - `app/services/coordinate_service.py` 좌표 계산 로직
+   - 모든 Artist 응답에 coordinates_3d 필드 자동 포함
+
+#### Phase 6: API 라우터 구현
+
+1. **Artist API 라우터 구현**
+   - `app/routers/artists.py` 9개 엔드포인트 구현
+
+2. **기타 API 라우터 구현**
+   - Institutions, Exhibitions, Transactions, Clusters, Analysis, Anomalies, Search
+
+#### Phase 7: 비즈니스 로직 구현
+
+1. **Neo4j 서비스 구현**
+   - `app/services/neo4j_service.py` Neo4j 쿼리 실행 로직
+
+2. **관계 데이터 조회 로직 구현**
+   - collaborations, institutions, exhibitions 배열 생성
+
+#### Phase 8: 에러 처리 및 검증
+
+1. **에러 응답 구현**
+   - `app/utils/errors.py` 표준 에러 응답 함수
+
+2. **입력 검증 구현**
+   - Pydantic 모델을 사용한 자동 검증
+
+#### Phase 9: 메인 애플리케이션 구성
+
+1. **FastAPI 애플리케이션 초기화**
+   - `app/main.py` 모든 라우터 등록, 미들웨어 등록
+
+### 12.3 Antigravity IDE에 제공할 최종 지시문
+
+```
+ARGO 프로젝트의 백엔드 API를 FastAPI + Python 3.10+로 구현하세요.
+
+**제공된 파일:**
+1. docs/ARGO_ANTIGRAVITY_BACKEND_SPECIFICATION.md (최우선 참조)
+2. docs/ARGO_API_SPECIFICATION.yaml (OpenAPI 명세서)
+3. docs/ARGO_Final_Schema.md (Neo4j 스키마)
+4. types/argo.ts (프론트엔드 타입 정의)
+
+**핵심 요구사항:**
+1. OpenAPI 명세서 기반 코드 생성
+2. JSON-LD 형식 응답 (모든 응답에 @context, @type, @id 포함)
+3. 좌표 자동 계산 (모든 Artist 응답에 coordinates_3d 필수 포함)
+4. 관계 데이터 포함 (collaborations, institutions, exhibitions)
+5. CORS 설정 (허용 Origin: https://artdrive1208.web.app)
+6. 표준 에러 응답 형식
+
+**중요 규칙:**
+- 모든 필드명은 정확히 일치해야 함
+- ID 매핑 규칙 준수 (argo:// URI 형식)
+- JSON-LD 형식 필수
+- 좌표 계산 로직 필수
+```
+
+---
+
 **문서 버전**: 1.1  
 **최종 업데이트**: 2025-12-09  
 **작성자**: ARGO 개발팀  

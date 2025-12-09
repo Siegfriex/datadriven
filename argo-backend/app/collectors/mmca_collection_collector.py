@@ -390,3 +390,5 @@ class MMCACollectionCollector:
         logger.info(f"작가-소장작품 매칭 완료: {len(matched)}명의 작가에 매칭")
         return matched
 
+
+

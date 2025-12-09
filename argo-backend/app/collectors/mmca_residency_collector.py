@@ -351,3 +351,5 @@ class MMCAResidencyCollector:
         logger.info(f"작가-레지던시 매칭 완료: {len(matched)}명의 작가에 매칭")
         return matched
 
+
+
