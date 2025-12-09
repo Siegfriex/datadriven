@@ -60,6 +60,10 @@ export interface Artist {
   coordinates_3d: Coordinates3D;
   instanceId?: number; // InstancedMesh 인덱스 매핑용
   collaborators?: string[]; // 협력 작가 ID 목록
+  // 관계 데이터 (Task 1.2: 연결선 시각화)
+  collaborations?: Collaboration[]; // 협력 관계 배열
+  institutions?: Institution[]; // 소속 기관 배열
+  exhibitions?: Exhibition[]; // 전시 참여 배열
 }
 
 // Cluster 엔터티 (PRD 3.3.2 기반)
@@ -102,4 +106,36 @@ export interface SelectedArtist {
   artist: Artist;
   instanceId: number;
   hovered: boolean;
+}
+
+// 관계 데이터 타입 정의 (Task 1.2: 연결선 시각화)
+export interface Collaboration {
+  artist_id: string;
+  strength: number; // 0-1 범위
+}
+
+export interface Institution {
+  institution_id: string;
+  name: string;
+  type?: string;
+}
+
+export interface Exhibition {
+  exhibition_id: string;
+  name: string;
+  year?: number;
+}
+
+// 필터 상태 타입 정의 (Task 1.1: 필터 동적 업데이트)
+export interface FilterState {
+  segment_ids?: string[];
+  career_stages?: ('early' | 'mid' | 'late')[];
+  score_ranges?: {
+    inst?: [number, number];
+    acad?: [number, number];
+    media?: [number, number];
+    network?: [number, number];
+  };
+  region?: string[];
+  institution_ids?: string[];
 }

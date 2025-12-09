@@ -8,16 +8,15 @@ import React, { useState, useEffect } from 'react';
 import { GalaxyScene } from './features/galaxy/components/GalaxyScene';
 import { LeftPanel } from './features/galaxy/components/LeftPanel';
 import { RightPanel } from './features/galaxy/components/RightPanel';
-import { AppProvider } from './context/AppContext';
-import { useAppStoreComplete } from './hooks/useAppStore';
-import { useGalaxy } from './features/galaxy/hooks/useGalaxy';
+import { AppProvider, useAppContext } from './context/AppContext';
+import { NavigationMenu } from './components/NavigationMenu';
 
 const AppContent: React.FC = () => {
     const { 
         selectArtist, 
         hoverArtist, 
         selectedArtist 
-    } = useGalaxy();
+    } = useAppContext();
 
     const [isLeftPanelOpen, setIsLeftPanelOpen] = useState(false);
     const [isRightPanelOpen, setIsRightPanelOpen] = useState(false);
@@ -36,36 +35,40 @@ const AppContent: React.FC = () => {
 
     return (
         <div className="fixed inset-0 w-screen h-screen bg-black text-white overflow-hidden font-sans" style={{ width: '100vw', height: '100vh' }}>
-            {/* 전체화면 캔버스 */}
-            <GalaxyScene 
-                onArtistSelect={(artist, id) => {
-                    selectArtist(artist, id);
-                    setIsRightPanelOpen(true);
-                }}
-                onArtistHover={hoverArtist}
-                selectedArtist={selectedArtist?.artist || null}
-            />
+            {/* 전체화면 캔버스 - Task 2.3: 반응형 디자인 (PRD 3.2, DDS 2.3) */}
+            <div className="w-full h-full md:w-[60%] lg:w-[60%]">
+                <GalaxyScene 
+                    onArtistSelect={(artist, id) => {
+                        selectArtist(artist, id);
+                        setIsRightPanelOpen(true);
+                    }}
+                    onArtistHover={hoverArtist}
+                    selectedArtist={selectedArtist?.artist || null}
+                />
+            </div>
             
-            {/* 좌패널: 미니멀 오버레이 (호버/클릭 시 표시) */}
+            {/* 좌패널: 미니멀 오버레이 - 반응형 너비 (데스크톱: 288px, 태블릿: 240px, 모바일: 전체화면) */}
             <LeftPanel 
                 className={isLeftPanelOpen ? 'translate-x-0' : ''}
                 onToggle={() => setIsLeftPanelOpen(!isLeftPanelOpen)}
             />
             
-            {/* 우패널: 미니멀 오버레이 */}
+            {/* 우패널: 미니멀 오버레이 - 반응형 너비 */}
             <RightPanel 
                 selectedArtist={selectedArtist?.artist || null} 
                 className={isRightPanelOpen ? 'translate-x-0' : ''}
                 onToggle={() => setIsRightPanelOpen(!isRightPanelOpen)}
             />
             
-            {/* 패널 토글 버튼 (미니멀) */}
+            {/* 패널 토글 버튼 (미니멀) - Task 4.1: 접근성 개선 */}
             <button
                 onClick={() => setIsLeftPanelOpen(!isLeftPanelOpen)}
                 className={`fixed top-6 left-6 z-50 text-white text-xs uppercase tracking-wider transition-opacity hover:opacity-100 ${
                     isLeftPanelOpen ? 'opacity-100' : 'opacity-40'
                 }`}
                 aria-label="Toggle Filters"
+                aria-expanded={isLeftPanelOpen}
+                aria-controls="left-panel"
             >
                 Filter
             </button>
@@ -78,6 +81,8 @@ const AppContent: React.FC = () => {
                         isRightPanelOpen ? 'opacity-100' : 'opacity-40'
                     }`}
                     aria-label="Toggle Info"
+                    aria-expanded={isRightPanelOpen}
+                    aria-controls="right-panel"
                 >
                     Info
                 </button>
@@ -96,14 +101,22 @@ const AppContent: React.FC = () => {
                     onClick={() => setIsRightPanelOpen(false)}
                 />
             )}
+            
+            {/* Task 3.2: 네비게이션 메뉴 */}
+            <NavigationMenu 
+                activeItem="analysis"
+                onItemClick={(item) => {
+                    console.log('Navigation item clicked:', item);
+                    // 향후 React Router 통합 시 라우팅 처리
+                }}
+            />
         </div>
     );
 };
 
 const App: React.FC = () => {
-    const store = useAppStoreComplete();
     return (
-        <AppProvider value={store}>
+        <AppProvider>
             <AppContent />
         </AppProvider>
     );

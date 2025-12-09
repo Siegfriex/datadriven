@@ -24,8 +24,14 @@ export const RightPanel: React.FC<RightPanelProps> = ({ selectedArtist, classNam
 
   // 선택된 작가가 없을 때의 빈 상태 UI
   if (!selectedArtist) {
-    return (
-      <aside className={`fixed right-0 top-0 h-full w-96 z-40 flex flex-col pointer-events-none bg-black/95 backdrop-blur-xl transition-transform duration-300 ease-out transform translate-x-full border-l border-white/5 ${className}`}>
+      /* Task 2.3: 반응형 디자인 - 데스크톱: 384px(w-96), 태블릿: 320px(w-80), 모바일: 전체화면(w-full) */
+      return (
+      <aside 
+        id="right-panel"
+        className={`fixed right-0 top-0 h-full w-full md:w-80 lg:w-96 z-40 flex flex-col pointer-events-none bg-black/95 backdrop-blur-xl transition-transform duration-300 ease-out transform translate-x-full md:translate-x-full border-l border-white/5 ${className}`}
+        role="complementary"
+        aria-label="Artist details panel"
+      >
         <div className="flex-1 flex items-center justify-center p-8">
           <p className="text-sm text-white/40 uppercase tracking-widest text-center">
             Select an artist to view details
@@ -62,7 +68,13 @@ export const RightPanel: React.FC<RightPanelProps> = ({ selectedArtist, classNam
   }).join(' ');
 
   return (
-    <aside className={`fixed right-0 top-0 h-full w-96 z-40 flex flex-col pointer-events-none bg-black/98 backdrop-blur-xl transition-transform duration-300 ease-out transform translate-x-full border-l border-white/20 shadow-[-10px_0_40px_rgba(0,0,0,0.5)] ${className}`}>
+    /* Task 2.3: 반응형 디자인 */
+    <aside 
+      id="right-panel"
+      className={`fixed right-0 top-0 h-full w-full md:w-80 lg:w-96 z-40 flex flex-col pointer-events-none bg-black/98 backdrop-blur-xl transition-transform duration-300 ease-out transform translate-x-full border-l border-white/20 shadow-[-10px_0_40px_rgba(0,0,0,0.5)] ${className}`}
+      role="complementary"
+      aria-label="Artist details panel"
+    >
       <div className="flex-1 overflow-y-auto pointer-events-auto scrollbar-hide">
         {/* 닫기 버튼 */}
         <div className="sticky top-0 z-50 bg-black/80 backdrop-blur-lg border-b border-white/10 p-4 flex justify-between items-center">
@@ -145,17 +157,143 @@ export const RightPanel: React.FC<RightPanelProps> = ({ selectedArtist, classNam
           </div>
         </section>
 
-        {/* 구조주의 분석 */}
-        <section>
-          <h2 className="text-xs text-white/60 uppercase tracking-widest mb-6">Analysis</h2>
+        {/* 구조주의 분석 (Task 2.1: DDS 2.2.2) */}
+        <section className="mb-12">
+          <h2 className="text-xs text-white/60 uppercase tracking-widest mb-6">Structural Analysis</h2>
           
-          <div className="space-y-4 text-sm font-light leading-relaxed text-white/80">
-            <p>
-              Dominant capital: <span className="text-white">{Object.entries(scores).reduce((a, b) => a[1] > b[1] ? a : b)[0].split('_')[0]}</span>
-            </p>
-            <p>
-              Position within {selectedArtist.segment_id?.split('_')[1]} field shows upward mobility driven by institutional recognition.
-            </p>
+          <div className="space-y-6">
+            {/* Dominant Capital */}
+            <div>
+              <p className="text-xs text-white/60 uppercase tracking-wider mb-2">Dominant Capital</p>
+              <p className="text-sm font-light text-white">
+                {selectedArtist.structuralist_analysis?.dominant_capital 
+                  ? selectedArtist.structuralist_analysis.dominant_capital.charAt(0).toUpperCase() + selectedArtist.structuralist_analysis.dominant_capital.slice(1)
+                  : Object.entries(scores).reduce((a, b) => a[1] > b[1] ? a : b)[0].split('_')[0].toUpperCase()}
+              </p>
+            </div>
+            
+            {/* Field Quadrant (Task 2.1: 필드 쿼드런트 시각화) */}
+            {selectedArtist.structuralist_analysis?.structural_position?.field_quadrant && (
+              <div>
+                <p className="text-xs text-white/60 uppercase tracking-wider mb-3">Field Position</p>
+                <div className="relative w-full h-32 bg-white/5 rounded border border-white/10 p-4">
+                  {/* 4분면 그리드 */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-full h-full relative">
+                      {/* 수직선 */}
+                      <div className="absolute left-1/2 top-0 bottom-0 w-px bg-white/20" />
+                      {/* 수평선 */}
+                      <div className="absolute top-1/2 left-0 right-0 h-px bg-white/20" />
+                      
+                      {/* 쿼드런트 라벨 */}
+                      <div className="absolute top-2 left-2 text-xs text-white/40">Q1</div>
+                      <div className="absolute top-2 right-2 text-xs text-white/40">Q2</div>
+                      <div className="absolute bottom-2 left-2 text-xs text-white/40">Q3</div>
+                      <div className="absolute bottom-2 right-2 text-xs text-white/40">Q4</div>
+                      
+                      {/* 작가 위치 점 */}
+                      <div 
+                        className="absolute w-3 h-3 bg-cyan-400 rounded-full shadow-[0_0_8px_rgba(34,211,238,0.6)]"
+                        style={{
+                          left: `${50 + (scores.inst_score - 50) * 0.4}%`,
+                          top: `${50 - (scores.acad_score - 50) * 0.4}%`,
+                          transform: 'translate(-50%, -50%)'
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <p className="text-xs text-white/50 mt-2">
+                  {selectedArtist.structuralist_analysis.structural_position.field_quadrant.replace('_', ' ')}
+                </p>
+              </div>
+            )}
+            
+            {/* Capital Composition */}
+            {selectedArtist.structuralist_analysis?.capital_composition && (
+              <div>
+                <p className="text-xs text-white/60 uppercase tracking-wider mb-3">Capital Composition</p>
+                <div className="space-y-2">
+                  {[
+                    { key: 'institutional_ratio', label: 'Institutional' },
+                    { key: 'academic_ratio', label: 'Academic' },
+                    { key: 'media_ratio', label: 'Media' },
+                    { key: 'network_ratio', label: 'Network' }
+                  ].map(({ key, label }) => {
+                    const value = selectedArtist.structuralist_analysis!.capital_composition[key as keyof typeof selectedArtist.structuralist_analysis.capital_composition];
+                    return (
+                      <div key={key} className="flex items-center gap-3">
+                        <span className="text-xs text-white/60 w-20">{label}</span>
+                        <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-white transition-all duration-500"
+                            style={{ width: `${value * 100}%` }}
+                          />
+                        </div>
+                        <span className="text-xs text-white/80 w-10 text-right">{Math.round(value * 100)}%</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+            
+            {/* 분석 텍스트 */}
+            <div className="pt-4 border-t border-white/10">
+              <p className="text-sm font-light leading-relaxed text-white/80">
+                Position within {selectedArtist.segment_id?.split('_')[1] || 'the'} field shows 
+                {selectedArtist.structuralist_analysis?.structural_position?.mobility_potential 
+                  ? selectedArtist.structuralist_analysis.structural_position.mobility_potential > 0.6 
+                    ? ' upward' 
+                    : selectedArtist.structuralist_analysis.structural_position.mobility_potential > 0.4
+                    ? ' stable'
+                    : ' limited'
+                  : ''} mobility driven by {selectedArtist.structuralist_analysis?.dominant_capital || 'institutional'} recognition.
+              </p>
+            </div>
+          </div>
+        </section>
+        
+        {/* 액션 버튼 (Task 2.1: DDS 2.2.2) */}
+        <section className="border-t border-white/10 pt-6">
+          <div className="flex flex-col gap-3">
+            <button 
+              className="w-full px-4 py-2 text-xs uppercase tracking-wider text-white/80 hover:text-white border border-white/20 hover:border-white/40 rounded transition-all duration-200"
+              onClick={() => {
+                // Full Report 기능 (향후 구현)
+                console.log('Full Report clicked');
+              }}
+              aria-label="View full report for selected artist"
+            >
+              Full Report
+            </button>
+            <button 
+              className="w-full px-4 py-2 text-xs uppercase tracking-wider text-white/80 hover:text-white border border-white/20 hover:border-white/40 rounded transition-all duration-200"
+              onClick={() => {
+                // 비교하기 기능 (향후 구현)
+                console.log('Compare clicked');
+              }}
+              aria-label="Compare selected artist with others"
+            >
+              Compare
+            </button>
+            <button 
+              className="w-full px-4 py-2 text-xs uppercase tracking-wider text-white/80 hover:text-white border border-white/20 hover:border-white/40 rounded transition-all duration-200"
+              onClick={() => {
+                // 다운로드 기능 (CSV, JSON)
+                const dataStr = JSON.stringify(selectedArtist, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `${selectedArtist.name.replace(/\s+/g, '_')}_data.json`;
+                link.click();
+                URL.revokeObjectURL(url);
+              }}
+              aria-label={`Download ${selectedArtist.name} data as JSON`}
+            >
+              Download (JSON)
+            </button>
           </div>
         </section>
         </div>

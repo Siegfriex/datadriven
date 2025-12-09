@@ -1,4 +1,4 @@
-import React, { Suspense, useState, useMemo } from 'react';
+import React, { Suspense, useState, useMemo, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Stars, Stats } from '@react-three/drei';
 import { ArtistParticles } from './ArtistParticles';
@@ -6,6 +6,7 @@ import { ArtistEdges } from './ArtistEdges';
 import { GalaxyControls } from './GalaxyControls';
 import { Artist } from '../../../types/argo';
 import { addInstanceIds } from '../utils/coordinateTransform';
+import { useAppContext } from '../../../context/AppContext';
 import mockArtistsData from '../../../data/mockArtists.json';
 
 interface GalaxySceneProps {
@@ -17,6 +18,7 @@ interface GalaxySceneProps {
 /**
  * GalaxyScene 컴포넌트
  * 메인 3D 갤러리 씬 설정
+ * Task 1.1: 필터 동적 업데이트 구현
  */
 export const GalaxyScene: React.FC<GalaxySceneProps> = ({
   onArtistSelect,
@@ -24,11 +26,20 @@ export const GalaxyScene: React.FC<GalaxySceneProps> = ({
   selectedArtist
 }) => {
   const [hoveredArtist, setHoveredArtist] = useState<Artist | null>(null);
+  const { filteredArtists, setArtistsList } = useAppContext();
   
-  // 데이터 중앙 관리: 한 번만 처리하여 모든 하위 컴포넌트에 전달
-  const artists = useMemo(() => {
+  // 초기 데이터 로드 및 필터 적용
+  const allArtists = useMemo(() => {
     return addInstanceIds(mockArtistsData as Artist[]);
   }, []);
+  
+  // useGalaxy에 전체 작가 목록 설정
+  useEffect(() => {
+    setArtistsList(allArtists);
+  }, [allArtists, setArtistsList]);
+  
+  // 필터된 작가 목록 사용 (필터가 없으면 전체 목록)
+  const artists = filteredArtists.length > 0 ? filteredArtists : allArtists;
   
   const selectedPosition = selectedArtist
     ? {
@@ -57,9 +68,20 @@ export const GalaxyScene: React.FC<GalaxySceneProps> = ({
         bottom: 0
       }}
     >
+      {/* Task 3.1: 성능 최적화 - 뷰 프러스텀 컬링 활성화 */}
       <Canvas
         camera={{ position: [15, 15, 15], fov: 60 }}
-        gl={{ antialias: false, alpha: false }}
+        gl={{ 
+          antialias: false, 
+          alpha: false,
+          // 성능 최적화 설정
+          powerPreference: 'high-performance',
+          stencil: false,
+          depth: true
+        }}
+        // 뷰 프러스텀 컬링 활성화
+        frameloop="always"
+        performance={{ min: 0.5 }}
         style={{ 
           position: 'absolute',
           top: 0,

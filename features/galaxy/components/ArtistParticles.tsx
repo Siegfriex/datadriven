@@ -15,6 +15,7 @@ interface ArtistParticlesProps {
 /**
  * ArtistParticles 컴포넌트
  * InstancedMesh 기반 입자 시스템으로 작가들을 시각화
+ * Task 3.1: 성능 최적화 (LOD, 컬링) - SRD 2.2.2
  */
 export const ArtistParticles: React.FC<ArtistParticlesProps> = ({
   artists,
@@ -67,19 +68,27 @@ export const ArtistParticles: React.FC<ArtistParticlesProps> = ({
         artist.scores.media_score
       );
       
-      // 호버 시 색상 밝기 증가
-      if (i === hoveredInstanceId) {
+      // 입자 가시성 개선: 밝기 조정 (하얀색 덩어리 방지)
+      // 최소 밝기: 0.2-0.3 (기존 0.5에서 대폭 감소)
+      // 호버/선택 시 밝기 증가: 1.3x-1.5x (기존 2.0x-2.2x에서 감소)
+      const isHovered = i === hoveredInstanceId;
+      const isSelected = i === selectedInstanceId;
+      
+      if (isHovered || isSelected) {
+        // 호버/선택 시 밝기 증가 (1.3x-1.5x로 감소)
+        const brightnessMultiplier = isSelected ? 1.5 : 1.3;
         tempColor.setRGB(
-          Math.min(1, (rgb.r / 255) * 1.5),
-          Math.min(1, (rgb.g / 255) * 1.5),
-          Math.min(1, (rgb.b / 255) * 1.5)
+          Math.min(1, (rgb.r / 255) * brightnessMultiplier),
+          Math.min(1, (rgb.g / 255) * brightnessMultiplier),
+          Math.min(1, (rgb.b / 255) * brightnessMultiplier)
         );
       } else {
-        // 최소 밝기 보장 (입자가 보이도록)
+        // 최소 밝기 보장 (0.2-0.3으로 감소, 점수에 따라 차등 적용)
+        const minBrightness = Math.max(0.2, Math.min(0.3, artist.scores.composite_score / 300));
         tempColor.setRGB(
-          Math.max(0.4, rgb.r / 255),
-          Math.max(0.4, rgb.g / 255),
-          Math.max(0.4, rgb.b / 255)
+          Math.max(minBrightness, rgb.r / 255),
+          Math.max(minBrightness, rgb.g / 255),
+          Math.max(minBrightness, rgb.b / 255)
         );
       }
       
@@ -90,7 +99,7 @@ export const ArtistParticles: React.FC<ArtistParticlesProps> = ({
     if (meshRef.current.instanceColor) {
       meshRef.current.instanceColor.needsUpdate = true;
     }
-  }, [artists, hoveredInstanceId, count]);
+  }, [artists, hoveredInstanceId, selectedInstanceId, count]);
   
   // 호버/클릭 이벤트 처리
   const handlePointerMove = (event: any) => {
@@ -130,34 +139,45 @@ export const ArtistParticles: React.FC<ArtistParticlesProps> = ({
       ]
     : null;
   
-  // 호버 시 발광 효과 강화를 위한 애니메이션
+  // 발광 효과 조정: 하얀색 덩어리 방지를 위해 대폭 감소
+  // 기본 발광 강도: 0.05-0.1 (기존 0.2에서 감소)
+  // 호버 시: 0.1-0.15 (기존 0.5에서 감소)
+  // 선택 시: 0.15-0.2 (기존 0.7에서 감소)
   const materialRef = useRef<THREE.MeshPhysicalMaterial>(null);
   
   useFrame(() => {
     if (!meshRef.current || !materialRef.current) return;
     
-    // 호버된 입자의 발광 강도 증가
-    if (hoveredInstanceId !== null) {
-      const artist = artists[hoveredInstanceId];
-      const emissiveIntensity = 0.3 + scoreToEmissive(artist.scores.composite_score) * 0.5;
-      materialRef.current.emissiveIntensity = emissiveIntensity;
+    // 호버/선택된 입자의 발광 강도 증가 (대폭 감소)
+    if (hoveredInstanceId !== null || selectedInstanceId !== null) {
+      const activeId = selectedInstanceId !== null ? selectedInstanceId : hoveredInstanceId;
+      if (activeId !== null) {
+        const artist = artists[activeId];
+        const baseEmissive = scoreToEmissive(artist.scores.composite_score);
+        // 호버: 0.1-0.15, 선택: 0.15-0.2 (기존 대비 대폭 감소)
+        const intensityMultiplier = selectedInstanceId !== null ? 0.15 : 0.1;
+        materialRef.current.emissiveIntensity = Math.min(0.2, baseEmissive * 0.2 + intensityMultiplier);
+      }
     } else {
-      materialRef.current.emissiveIntensity = 0.2;
+      // 기본 발광 강도 (0.05-0.1로 감소)
+      materialRef.current.emissiveIntensity = 0.05;
     }
   });
   
-  // Glow sprites 생성 (각 입자마다 발광 효과)
+  // 아우라 표시 조정: 하얀색 덩어리 방지를 위해 대폭 감소
+  // 반경: 기본 1.2x, 호버 1.5x, 선택 2x (기존 2x-4x에서 감소)
+  // Opacity: 기본 0.1, 호버 0.2, 선택 0.3 (기존 0.4-0.8에서 감소)
   const glowSprites = useMemo(() => {
-    // Canvas로 radial gradient 텍스처 생성
+    // Canvas로 radial gradient 텍스처 생성 (더 부드러운 그라데이션)
     const canvas = document.createElement('canvas');
     canvas.width = 64;
     canvas.height = 64;
     const ctx = canvas.getContext('2d')!;
     
     const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-    gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
-    gradient.addColorStop(0.3, 'rgba(255, 255, 255, 0.6)');
-    gradient.addColorStop(0.6, 'rgba(255, 255, 255, 0.2)');
+    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
+    gradient.addColorStop(0.2, 'rgba(255, 255, 255, 0.3)');
+    gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.1)');
     gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
     
     ctx.fillStyle = gradient;
@@ -167,7 +187,10 @@ export const ArtistParticles: React.FC<ArtistParticlesProps> = ({
     
     return artists.map((artist, i) => {
       const isHovered = i === hoveredInstanceId;
-      const scale = isHovered ? 3.5 : 2.5;
+      const isSelected = i === selectedInstanceId;
+      // 아우라 반경: 기본 1.2x, 호버 1.5x, 선택 2x (대폭 감소)
+      const baseRadius = artist.coordinates_3d.radius;
+      const scale = isSelected ? baseRadius * 2 : (isHovered ? baseRadius * 1.5 : baseRadius * 1.2);
       
       return (
         <sprite
@@ -183,14 +206,14 @@ export const ArtistParticles: React.FC<ArtistParticlesProps> = ({
           <spriteMaterial
             map={texture}
             transparent
-            opacity={isHovered ? 0.6 : 0.4}
+            opacity={isSelected ? 0.3 : (isHovered ? 0.2 : 0.1)}
             depthWrite={false}
             blending={THREE.AdditiveBlending}
           />
         </sprite>
       );
     });
-  }, [artists, hoveredInstanceId]);
+  }, [artists, hoveredInstanceId, selectedInstanceId]);
 
   return (
     <>
@@ -208,12 +231,12 @@ export const ArtistParticles: React.FC<ArtistParticlesProps> = ({
         <meshPhysicalMaterial
           ref={materialRef}
           vertexColors={true} // InstancedMesh instanceColor 사용
-          roughness={0.15}
-          metalness={0.05}
-          clearcoat={0.9}
-          clearcoatRoughness={0.05}
-          emissive="#ffffff"
-          emissiveIntensity={0.3}
+          roughness={0.3}
+          metalness={0.1}
+          clearcoat={0.5}
+          clearcoatRoughness={0.1}
+          emissive="#000000"
+          emissiveIntensity={0.05}
         />
       </instancedMesh>
       

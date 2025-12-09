@@ -44,11 +44,26 @@ export function scoreToThreeColor(
 
 /**
  * 복합 점수를 발광 강도로 변환
+ * 하얀색 덩어리 방지를 위해 발광 강도 대폭 감소
  * @param composite_score 복합 점수 (0-100)
  * @returns 발광 강도 (0-1)
+ * 
+ * 점수별 발광 강도 (기존 대비 80% 감소):
+ * 0-50: 어두움 (0.0-0.06)
+ * 50-70: 중간 (0.06-0.1)
+ * 70-100: 밝음 (0.1-0.16)
  */
 export function scoreToEmissive(composite_score: number): number {
-  return composite_score / 100;
+  if (composite_score <= 50) {
+    // 0-50: 어두움 (기존 0.0-0.3 → 0.0-0.06)
+    return (composite_score / 50) * 0.06;
+  } else if (composite_score <= 70) {
+    // 50-70: 중간 (기존 0.3-0.5 → 0.06-0.1)
+    return 0.06 + ((composite_score - 50) / 20) * 0.04;
+  } else {
+    // 70-100: 밝음 (기존 0.5-0.8 → 0.1-0.16)
+    return 0.1 + ((composite_score - 70) / 30) * 0.06;
+  }
 }
 
 /**
