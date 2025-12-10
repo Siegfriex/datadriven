@@ -1,71 +1,75 @@
 """
 GDS 분석 실행 스크립트
-
-GDS 중심성 분석 및 Louvain 커뮤니티 탐지 실행
-실행: python scripts/run_gds_analysis.py
 """
-
 import sys
 import os
-import asyncio
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from app.services.analysis_service import analysis_service
 import logging
 
-logging.basicConfig(level=logging.INFO)
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from app.services.neo4j_service import neo4j_service
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 logger = logging.getLogger(__name__)
 
-
-async def main():
-    """메인 실행 함수"""
-    logger.info("=" * 60)
-    logger.info("GDS 분석 실행 시작")
-    logger.info("=" * 60)
+def run_gds_analysis():
+    """GDS 분석 쿼리 실행"""
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    query_file = os.path.join(base_dir, "neo4j", "queries", "03_gds_execution.cypher")
     
-    # 1. 중심성 분석 실행
-    logger.info("\n1. 중심성 분석 실행 중...")
-    centrality_result = await analysis_service.run_gds_centrality()
-    if "error" in centrality_result:
-        logger.error(f"❌ 중심성 분석 실패: {centrality_result['error']}")
-        return
-    else:
-        logger.info(f"✅ 중심성 분석 완료:")
-        logger.info(f"   - Degree: {centrality_result.get('degree_updated', 0)}개 노드 업데이트")
-        logger.info(f"   - Betweenness: {centrality_result.get('betweenness_updated', 0)}개 노드 업데이트")
-        logger.info(f"   - Eigenvector: {centrality_result.get('eigenvector_updated', 0)}개 노드 업데이트")
+    logger.info(f"GDS 분석 쿼리 파일 실행: {query_file}")
     
-    # 2. Louvain 커뮤니티 탐지 실행
-    logger.info("\n2. Louvain 커뮤니티 탐지 실행 중...")
-    louvain_result = await analysis_service.run_louvain_community()
-    if "error" in louvain_result:
-        logger.error(f"❌ Louvain 실패: {louvain_result['error']}")
-        return
-    else:
-        logger.info(f"✅ Louvain 완료:")
-        logger.info(f"   - 커뮤니티 수: {louvain_result.get('communities_detected', 0)}개")
-        logger.info(f"   - 노드 업데이트: {louvain_result.get('nodes_updated', 0)}개")
-        logger.info(f"   - Cluster 노드 생성: {louvain_result.get('clusters_created', 0)}개")
-        logger.info(f"   - BELONGS_TO 관계 생성: {louvain_result.get('relationships_created', 0)}개")
+    if not os.path.exists(query_file):
+        logger.error(f"파일을 찾을 수 없습니다: {query_file}")
+        return False
+        
+    with open(query_file, 'r', encoding='utf-8') as f:
+        content = f.read()
     
-    # 3. 구조주의 분석 필드 계산
-    logger.info("\n3. 구조주의 분석 필드 계산 중...")
-    structuralist_result = await analysis_service.calculate_structuralist_fields()
-    if "error" in structuralist_result:
-        logger.error(f"❌ 구조주의 분석 실패: {structuralist_result['error']}")
-        return
-    else:
-        logger.info(f"✅ 구조주의 분석 완료:")
-        logger.info(f"   - Capital Composition: {structuralist_result.get('capital_composition_updated', 0)}개")
-        logger.info(f"   - Dominant Capital: {structuralist_result.get('dominant_capital_updated', 0)}개")
-        logger.info(f"   - Field Quadrant: {structuralist_result.get('field_quadrant_updated', 0)}개")
-        logger.info(f"   - Network Score: {structuralist_result.get('network_score_updated', 0)}개")
+    # 쿼리 파싱 (세미콜론 기준)
+    lines = []
+    for line in content.split('\n'):
+        stripped = line.strip()
+        if stripped and not stripped.startswith('//'):
+            lines.append(line)
     
-    logger.info("=" * 60)
-    logger.info("GDS 분석 완료!")
-    logger.info("=" * 60)
-
+    queries = []
+    current_query = []
+    
+    for line in lines:
+        current_query.append(line)
+        if line.rstrip().endswith(';'):
+            query_text = '\n'.join(current_query).strip()
+            if query_text:
+                queries.append(query_text)
+            current_query = []
+    
+    if current_query:
+        query_text = '\n'.join(current_query).strip()
+        if query_text:
+            queries.append(query_text)
+    
+    logger.info(f"파싱된 쿼리 수: {len(queries)}")
+    
+    success_count = 0
+    for i, query in enumerate(queries, 1):
+        try:
+            logger.info(f"GDS 쿼리 {i}/{len(queries)} 실행 중...")
+            result = neo4j_service.execute_query(query)
+            logger.info(f"GDS 쿼리 {i} 성공")
+            if result:
+                logger.info(f"  결과: {result}")
+            success_count += 1
+        except Exception as e:
+            logger.error(f"GDS 쿼리 {i} 실패: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
+    
+    logger.info(f"GDS 분석 완료: {success_count}/{len(queries)} 성공")
+    return success_count > 0
 
 if __name__ == "__main__":
-    asyncio.run(main())
-
+    run_gds_analysis()

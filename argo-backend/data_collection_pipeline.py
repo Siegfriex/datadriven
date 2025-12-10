@@ -104,6 +104,10 @@ class DataCollectionPipeline:
         """
         logger.info(f"데이터 수집 파이프라인 시작 (목표: {target_count}명, dry_run: {dry_run})")
         
+        # 소규모 테스트를 위한 데이터 수집 제한 설정
+        # target_count가 작을수록 더 적은 데이터만 수집 (시간 절약)
+        is_small_scale = target_count <= 20  # 20명 이하는 소규모로 간주
+        
         # Step 1: 데이터 수집
         logger.info("=" * 60)
         logger.info("Step 1: 데이터 수집 시작")
@@ -112,11 +116,15 @@ class DataCollectionPipeline:
         logger.info(f"작가 수집 완료: {len(raw_artists)}명")
         
         # 작품 정보 수집 (작가 점수 계산에 활용)
-        # 주의: 전체 작품 수집은 시간이 오래 걸립니다 (약 1분)
-        # 테스트 시에는 샘플만 수집하거나 캐싱 사용 권장
+        # 주의: 전체 작품 수집은 시간이 오래 걸립니다 (약 5분)
+        # 소규모 테스트나 dry_run 모드에서는 샘플만 수집 (시간 절약)
         logger.info("작품 정보 수집 시작...")
-        # dry_run 모드에서는 샘플만 수집 (시간 절약)
-        artwork_limit = 1000 if dry_run else None
+        if dry_run:
+            artwork_limit = 1000  # dry_run: 1,000개
+        elif is_small_scale:
+            artwork_limit = 500  # 소규모(20명 이하): 500개
+        else:
+            artwork_limit = None  # 대규모: 전체 수집
         raw_artworks = self._collect_artworks(max_count=artwork_limit)
         logger.info(f"작품 수집 완료: {len(raw_artworks)}개")
         
@@ -132,36 +140,56 @@ class DataCollectionPipeline:
         
         # KCI 논문 정보 수집 (학술 점수 계산에 활용)
         logger.info("KCI 논문 정보 수집 시작 (학술 점수 계산용)...")
-        # dry_run 모드에서는 샘플만 수집 (시간 절약)
-        kci_limit = 500 if dry_run else None
+        if dry_run:
+            kci_limit = 500  # dry_run: 500개
+        elif is_small_scale:
+            kci_limit = 200  # 소규모(20명 이하): 200개
+        else:
+            kci_limit = None  # 대규모: 전체 수집
         raw_papers = self._collect_kci_papers(max_count=kci_limit)
         logger.info(f"KCI 논문 수집 완료: {len(raw_papers)}개")
         
         # KCI 인용 정보 수집 (실제 인용 수 확인용)
         logger.info("KCI 인용 정보 수집 시작 (실제 인용 수 확인용)...")
-        # dry_run 모드에서는 샘플만 수집 (시간 절약, 응답 시간이 길 수 있음)
-        citation_limit = 200 if dry_run else None
+        if dry_run:
+            citation_limit = 200  # dry_run: 200개
+        elif is_small_scale:
+            citation_limit = 100  # 소규모(20명 이하): 100개
+        else:
+            citation_limit = None  # 대규모: 전체 수집
         raw_citations = self._collect_kci_citations(max_count=citation_limit)
         logger.info(f"KCI 인용 정보 수집 완료: {len(raw_citations)}개")
         
         # 청주공예비엔날레 데이터 수집 (비엔날레 참여 정보)
         logger.info("청주공예비엔날레 데이터 수집 시작 (비엔날레 참여 정보용)...")
-        # dry_run 모드에서는 샘플만 수집
-        biennale_limit = 100 if dry_run else None
+        if dry_run:
+            biennale_limit = 100  # dry_run: 100개
+        elif is_small_scale:
+            biennale_limit = 50  # 소규모(20명 이하): 50개
+        else:
+            biennale_limit = None  # 대규모: 전체 수집
         raw_biennale_works = self._collect_cheongju_biennale(max_count=biennale_limit)
         logger.info(f"청주공예비엔날레 데이터 수집 완료: {len(raw_biennale_works)}개")
         
         # MMCA 레지던시작가소식 수집 (레지던시 참여 정보)
         logger.info("MMCA 레지던시작가소식 수집 시작 (레지던시 참여 정보용)...")
-        # dry_run 모드에서는 샘플만 수집
-        residency_limit = 100 if dry_run else None
+        if dry_run:
+            residency_limit = 100  # dry_run: 100개
+        elif is_small_scale:
+            residency_limit = 50  # 소규모(20명 이하): 50개
+        else:
+            residency_limit = None  # 대규모: 전체 수집
         raw_residency_news = self._collect_mmca_residency(max_count=residency_limit)
         logger.info(f"MMCA 레지던시작가소식 수집 완료: {len(raw_residency_news)}개")
         
         # MMCA 소장작품 수집 (소장작품 정보)
         logger.info("MMCA 소장작품 수집 시작 (소장작품 정보용)...")
-        # dry_run 모드에서는 샘플만 수집
-        collection_limit = 200 if dry_run else None
+        if dry_run:
+            collection_limit = 200  # dry_run: 200개
+        elif is_small_scale:
+            collection_limit = 100  # 소규모(20명 이하): 100개
+        else:
+            collection_limit = None  # 대규모: 전체 수집
         raw_collection_works = self._collect_mmca_collection(max_count=collection_limit)
         logger.info(f"MMCA 소장작품 수집 완료: {len(raw_collection_works)}개")
         
@@ -219,7 +247,7 @@ class DataCollectionPipeline:
             # 6.1: Artist 노드 업로드
             logger.info("6.1: Artist 노드 업로드 중...")
             upload_result = self._upload_to_neo4j(final_artists)
-            logger.info(f"Artist 업로드 완료: 성공 {upload_result['success']}명, 실패 {upload_result['failed']}명")
+            logger.info(f"Artist 업로드 완료: 성공 {upload_result['success']}명, 실패 {upload_result.get('upload_failed', 0)}명")
             
             # 6.2: Institution 노드 업로드
             logger.info("6.2: Institution 노드 업로드 중...")
@@ -233,9 +261,21 @@ class DataCollectionPipeline:
                 exh_result = self._upload_exhibitions_to_neo4j(raw_biennale_works)
                 logger.info(f"Exhibition 업로드 완료: 성공 {exh_result['success']}개, 실패 {exh_result['failed']}개")
             
-            # 6.4: 관계 생성 (선택사항, 향후 확장)
+            # 6.4: Artwork 노드 업로드 (작품 데이터)
+            logger.info("6.4: Artwork 노드 업로드 중...")
+            if raw_artworks:
+                artwork_result = self._upload_artworks_to_neo4j(raw_artworks)
+                logger.info(f"Artwork 업로드 완료: 성공 {artwork_result['success']}개, 실패 {artwork_result['failed']}개")
+            
+            # 6.5: Publication 노드 업로드 (논문 데이터)
+            logger.info("6.5: Publication 노드 업로드 중...")
+            if raw_papers:
+                paper_result = self._upload_publications_to_neo4j(raw_papers)
+                logger.info(f"Publication 업로드 완료: 성공 {paper_result['success']}개, 실패 {paper_result['failed']}개")
+            
+            # 6.6: 관계 생성 (선택사항, 향후 확장)
             # TODO: KCI 공동저자 관계, 작가-기관 관계, 작가-전시 관계 생성
-            logger.info("6.4: 관계 생성은 향후 구현 예정")
+            logger.info("6.6: 관계 생성은 향후 구현 예정")
             
         else:
             logger.info("=" * 60)
@@ -802,6 +842,44 @@ class DataCollectionPipeline:
             "success": success_count,
             "failed": failed_count,
             "total": len(biennale_years)
+        }
+    
+    def _upload_artworks_to_neo4j(self, artworks: List[Dict]) -> Dict[str, int]:
+        """Step 6.4: Artwork 노드 Neo4j 업로드"""
+        success_count = 0
+        failed_count = 0
+        
+        logger.info(f"작품 데이터 업로드 시작: {len(artworks)}개")
+        for artwork in artworks:
+            # 정규화된 작품 데이터는 이미 올바른 형식
+            if self.uploader.upload_artwork(artwork):
+                success_count += 1
+            else:
+                failed_count += 1
+        
+        return {
+            "success": success_count,
+            "failed": failed_count,
+            "total": len(artworks)
+        }
+    
+    def _upload_publications_to_neo4j(self, papers: List[Dict]) -> Dict[str, int]:
+        """Step 6.5: Publication 노드 Neo4j 업로드 (논문 데이터)"""
+        success_count = 0
+        failed_count = 0
+        
+        logger.info(f"논문 데이터 업로드 시작: {len(papers)}개")
+        for paper in papers:
+            # 정규화된 논문 데이터는 이미 올바른 형식
+            if self.uploader.upload_publication(paper):
+                success_count += 1
+            else:
+                failed_count += 1
+        
+        return {
+            "success": success_count,
+            "failed": failed_count,
+            "total": len(papers)
         }
 
 

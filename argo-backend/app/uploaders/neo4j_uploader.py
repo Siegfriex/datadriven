@@ -151,7 +151,33 @@ class Neo4jUploader:
             now_iso = datetime.utcnow().isoformat() + "Z"
             collected_at = artist_data.get("collected_at", now_iso)
             
-            # Neo4j 쿼리 생성
+            # coordinates_3d를 개별 필드로 평탄화 (Neo4j는 중첩 Map을 허용하지 않음)
+            coord_x = coords.get("x", 0.0)
+            coord_y = coords.get("y", 0.0)
+            coord_z = coords.get("z", 0.0)
+            coord_radius = coords.get("radius", 10.0)
+            coord_computed_at = coords.get("computed_at", now_iso)
+            coord_algorithm = coords.get("algorithm", "normalize_v1")
+            
+            # structuralist_analysis를 개별 필드로 평탄화
+            dominant_capital = None
+            field_quadrant = None
+            capital_inst_ratio = None
+            capital_acad_ratio = None
+            capital_media_ratio = None
+            capital_network_ratio = None
+            
+            if structuralist_analysis_data:
+                dominant_capital = structuralist_analysis_data.dominant_capital
+                if structuralist_analysis_data.structural_position:
+                    field_quadrant = structuralist_analysis_data.structural_position.get("field_quadrant")
+                if structuralist_analysis_data.capital_composition:
+                    capital_inst_ratio = structuralist_analysis_data.capital_composition.get("institutional_ratio")
+                    capital_acad_ratio = structuralist_analysis_data.capital_composition.get("academic_ratio")
+                    capital_media_ratio = structuralist_analysis_data.capital_composition.get("media_ratio")
+                    capital_network_ratio = structuralist_analysis_data.capital_composition.get("network_ratio")
+            
+            # Neo4j 쿼리 생성 (중첩 구조를 개별 필드로 저장)
             query = """
             MERGE (a:Artist {id: $artist_id})
             SET a.name = $name,
@@ -169,12 +195,30 @@ class Neo4jUploader:
                 a.network_score = $network_score,
                 a.composite_score = $composite_score,
                 a.composite_confidence = $composite_confidence,
-                a.coordinates_3d = $coordinates_3d,
-                a.structuralist_analysis = $structuralist_analysis,
-                a.metadata = $metadata,
+                a.coord_x = $coord_x,
+                a.coord_y = $coord_y,
+                a.coord_z = $coord_z,
+                a.coord_radius = $coord_radius,
+                a.coord_computed_at = $coord_computed_at,
+                a.coord_algorithm = $coord_algorithm,
+                a.dominant_capital = $dominant_capital,
+                a.field_quadrant = $field_quadrant,
+                a.capital_inst_ratio = $capital_inst_ratio,
+                a.capital_acad_ratio = $capital_acad_ratio,
+                a.capital_media_ratio = $capital_media_ratio,
+                a.capital_network_ratio = $capital_network_ratio,
+                a.data_source = $data_source,
+                a.confidence_score = $confidence_score,
+                a.collected_at = $collected_at,
+                a.verified = $verified,
                 a.updated_at = $updated_at
             RETURN a
             """
+            
+            # metadata를 평탄화
+            data_sources = artist_data.get("data_sources", [artist_data.get("source", "ARKO")])
+            if isinstance(data_sources, str):
+                data_sources = [data_sources]
             
             params = {
                 "artist_id": artist_id,
@@ -193,14 +237,22 @@ class Neo4jUploader:
                 "network_score": scores.network_score,
                 "composite_score": scores.composite_score,
                 "composite_confidence": scores.composite_confidence,
-                "coordinates_3d": coords,
-                "structuralist_analysis": artist_data.get("structuralist_analysis"),
-                "metadata": {
-                    "data_source": artist_data.get("data_sources", [artist_data.get("source", "ARKO")]),
-                    "confidence_score": artist_data.get("composite_confidence") or artist_data.get("confidence_score", 0.95),
-                    "collected_at": collected_at,
-                    "verified": artist_data.get("is_verified", False)
-                },
+                "coord_x": coord_x,
+                "coord_y": coord_y,
+                "coord_z": coord_z,
+                "coord_radius": coord_radius,
+                "coord_computed_at": coord_computed_at,
+                "coord_algorithm": coord_algorithm,
+                "dominant_capital": dominant_capital,
+                "field_quadrant": field_quadrant,
+                "capital_inst_ratio": capital_inst_ratio,
+                "capital_acad_ratio": capital_acad_ratio,
+                "capital_media_ratio": capital_media_ratio,
+                "capital_network_ratio": capital_network_ratio,
+                "data_source": data_sources[0] if data_sources else "ARKO",
+                "confidence_score": artist_data.get("composite_confidence") or artist_data.get("confidence_score", 0.95),
+                "collected_at": collected_at,
+                "verified": artist_data.get("is_verified", False),
                 "updated_at": now_iso
             }
             
@@ -501,6 +553,200 @@ class Neo4jUploader:
                 
         except Exception as e:
             logger.error(f"Exhibition 업로드 중 오류 발생 ({exh_data.get('title')}): {e}")
+            return False
+    
+    @staticmethod
+    def upload_artwork(artwork_data: Dict[str, Any]) -> bool:
+        """
+        단일 Artwork 노드 업로드
+        
+        Args:
+            artwork_data: 정규화된 작품 데이터
+            
+        Returns:
+            업로드 성공 여부
+        """
+        try:
+            work_id = artwork_data.get("id") or artwork_data.get("work_id")
+            if not work_id:
+                import re
+                import hashlib
+                # 고유 ID 생성: 작가명 + 작품명 + 설치연도 + 해시
+                title = artwork_data.get("title") or ""
+                artist_name = artwork_data.get("artist_name") or ""
+                install_year = artwork_data.get("install_year") or ""
+                building_name = artwork_data.get("building_name") or ""
+                
+                # 고유성을 위한 문자열 생성
+                unique_str = f"{artist_name}_{title}_{install_year}_{building_name}"
+                # 해시로 고유 ID 생성
+                unique_hash = hashlib.md5(unique_str.encode()).hexdigest()[:8]
+                
+                clean_title = re.sub(r'[^a-zA-Z0-9]', '', title.lower())[:20] if title else "unknown"
+                clean_artist = re.sub(r'[^a-zA-Z0-9]', '', artist_name.lower())[:20] if artist_name else "unknown"
+                work_id = f"artwork_{clean_artist}_{clean_title}_{unique_hash}"
+            
+            now_iso = datetime.utcnow().isoformat() + "Z"
+            
+            query = """
+            MERGE (w:Artwork {id: $id})
+            SET w.title = $title,
+                w.artist_name = $artist_name,
+                w.category = $category,
+                w.install_date = $install_date,
+                w.install_year = $install_year,
+                w.region = $region,
+                w.city = $city,
+                w.district = $district,
+                w.building_name = $building_name,
+                w.building_address = $building_address,
+                w.building_type = $building_type,
+                w.data_source = $data_source,
+                w.confidence_score = $confidence_score,
+                w.collected_at = $collected_at,
+                w.updated_at = $updated_at
+            RETURN w
+            """
+            
+            params = {
+                "id": work_id,
+                "title": artwork_data.get("title"),
+                "artist_name": artwork_data.get("artist_name"),
+                "category": artwork_data.get("category"),
+                "install_date": artwork_data.get("install_date"),
+                "install_year": artwork_data.get("install_year"),
+                "region": artwork_data.get("region"),
+                "city": artwork_data.get("city"),
+                "district": artwork_data.get("district"),
+                "building_name": artwork_data.get("building_name"),
+                "building_address": artwork_data.get("building_address"),
+                "building_type": artwork_data.get("building_type"),
+                "data_source": artwork_data.get("source", "ARKO"),
+                "confidence_score": artwork_data.get("confidence_score", 0.95),
+                "collected_at": artwork_data.get("collected_at", now_iso),
+                "updated_at": now_iso
+            }
+            
+            result = neo4j_service.execute_query(query, params)
+            
+            if result:
+                logger.info(f"Artwork 업로드 성공: {work_id} ({artwork_data.get('title')})")
+                return True
+            else:
+                logger.warning(f"Artwork 업로드 실패: {work_id}")
+                return False
+                
+        except Exception as e:
+            logger.error(f"Artwork 업로드 중 오류 발생 ({artwork_data.get('title')}): {e}")
+            import traceback
+            logger.error(traceback.format_exc())
+            return False
+    
+    @staticmethod
+    def upload_publication(paper_data: Dict[str, Any]) -> bool:
+        """
+        단일 Publication 노드 업로드 (논문)
+        
+        Args:
+            paper_data: 정규화된 논문 데이터
+            
+        Returns:
+            업로드 성공 여부
+        """
+        try:
+            # 논문 ID 생성 (KCI ID 우선 사용)
+            paper_id = paper_data.get("id") or paper_data.get("kci_id") or paper_data.get("paper_id")
+            if not paper_id:
+                import re
+                import hashlib
+                # 고유 ID 생성: 제목 + 저자 + 연도 + ISSN
+                title_ko = paper_data.get("title_ko") or ""
+                title_en = paper_data.get("title_en") or ""
+                first_author = paper_data.get("first_author") or ""
+                year = paper_data.get("publication_year") or ""
+                issn = paper_data.get("issn") or ""
+                
+                # 고유성을 위한 문자열 생성
+                unique_str = f"{title_ko}_{title_en}_{first_author}_{year}_{issn}"
+                # 해시로 고유 ID 생성
+                unique_hash = hashlib.md5(unique_str.encode()).hexdigest()[:8]
+                
+                clean_title = re.sub(r'[^a-zA-Z0-9]', '', (title_ko or title_en or "unknown").lower())[:20]
+                paper_id = f"pub_{clean_title}_{year}_{unique_hash}"
+            
+            now_iso = datetime.utcnow().isoformat() + "Z"
+            
+            # 저자 리스트를 문자열로 변환 (Neo4j는 배열 지원)
+            authors = paper_data.get("authors", [])
+            if isinstance(authors, str):
+                authors = [a.strip() for a in authors.split(",") if a.strip()]
+            
+            query = """
+            MERGE (p:Publication {id: $id})
+            SET p.title_ko = $title_ko,
+                p.title_en = $title_en,
+                p.title_foreign = $title_foreign,
+                p.authors = $authors,
+                p.first_author = $first_author,
+                p.journal_name_ko = $journal_name_ko,
+                p.journal_name_foreign = $journal_name_foreign,
+                p.issn = $issn,
+                p.publisher_ko = $publisher_ko,
+                p.publisher_en = $publisher_en,
+                p.publication_year = $publication_year,
+                p.volume = $volume,
+                p.issue = $issue,
+                p.start_page = $start_page,
+                p.end_page = $end_page,
+                p.registration_type = $registration_type,
+                p.is_kci_registered = $is_kci_registered,
+                p.subject_area = $subject_area,
+                p.data_source = $data_source,
+                p.confidence_score = $confidence_score,
+                p.collected_at = $collected_at,
+                p.updated_at = $updated_at
+            RETURN p
+            """
+            
+            params = {
+                "id": paper_id,
+                "title_ko": paper_data.get("title_ko"),
+                "title_en": paper_data.get("title_en"),
+                "title_foreign": paper_data.get("title_foreign"),
+                "authors": authors,
+                "first_author": paper_data.get("first_author"),
+                "journal_name_ko": paper_data.get("journal_name_ko"),
+                "journal_name_foreign": paper_data.get("journal_name_foreign"),
+                "issn": paper_data.get("issn"),
+                "publisher_ko": paper_data.get("publisher_ko"),
+                "publisher_en": paper_data.get("publisher_en"),
+                "publication_year": paper_data.get("publication_year"),
+                "volume": paper_data.get("volume"),
+                "issue": paper_data.get("issue"),
+                "start_page": paper_data.get("start_page"),
+                "end_page": paper_data.get("end_page"),
+                "registration_type": paper_data.get("registration_type"),
+                "is_kci_registered": paper_data.get("is_kci_registered", False),
+                "subject_area": paper_data.get("subject_area"),
+                "data_source": paper_data.get("source", "KCI"),
+                "confidence_score": paper_data.get("confidence_score", 0.85),
+                "collected_at": paper_data.get("collected_at", now_iso),
+                "updated_at": now_iso
+            }
+            
+            result = neo4j_service.execute_query(query, params)
+            
+            if result:
+                logger.info(f"Publication 업로드 성공: {paper_id} ({paper_data.get('title_ko') or paper_data.get('title_en')})")
+                return True
+            else:
+                logger.warning(f"Publication 업로드 실패: {paper_id}")
+                return False
+                
+        except Exception as e:
+            logger.error(f"Publication 업로드 중 오류 발생 ({paper_data.get('title_ko')}): {e}")
+            import traceback
+            logger.error(traceback.format_exc())
             return False
     
     @staticmethod

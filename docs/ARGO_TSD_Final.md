@@ -1986,6 +1986,128 @@ BRD 비즈니스 목표
 
 ---
 
+## Appendix A. Firebase Functions Gen 2 운영 가이드
+
+### A.1 Functions 구조
+
+- **버전**: Gen 2 (Cloud Run 기반)
+- **런타임**: Node.js 20
+- **언어**: TypeScript
+- **리전**: asia-northeast3 (서울)
+- **컴파일**: `npm run build` → `lib/` 디렉토리에 JavaScript 생성
+
+**Gen 2의 장점**:
+- Cloud Run 기반으로 더 나은 성능과 확장성
+- 자동 CORS 처리 지원
+- 더 긴 타임아웃 (최대 60분)
+- 더 많은 메모리 및 CPU 옵션
+
+### A.2 Functions 빌드 및 배포
+
+```powershell
+# Functions 빌드
+cd functions
+npm run build
+
+# Functions 배포 (Gen 2)
+firebase deploy --only functions
+
+# 또는 루트에서
+npm run deploy:functions
+```
+
+### A.3 서비스 계정 및 IAM 권한
+
+**프로젝트 번호**: 55248184822
+
+#### Cloud Build Service Account
+
+**이메일**: `55248184822@cloudbuild.gserviceaccount.com`
+
+| 역할 | 용도 |
+|------|------|
+| `roles/run.admin` | Gen 2 Functions 배포 |
+| `roles/iam.serviceAccountUser` | 서비스 계정 사용 |
+| `roles/cloudscheduler.admin` | 스케줄 함수 생성 |
+
+#### Cloud Scheduler Service Agent
+
+**이메일**: `service-55248184822@gcp-sa-cloudscheduler.iam.gserviceaccount.com`
+
+| 역할 | 용도 |
+|------|------|
+| `roles/run.invoker` | Gen 2 함수 호출 |
+
+### A.4 배포 검증
+
+```powershell
+# Functions 목록 확인
+firebase functions:list
+
+# 리전 확인
+gcloud functions list --region=asia-northeast3 --gen2
+
+# Cloud Scheduler 작업 확인
+gcloud scheduler jobs list --location=asia-northeast3
+```
+
+---
+
+## Appendix B. 문서 참조 관계
+
+### B.1 핵심 문서 (Core Documents)
+
+| 문서 | 역할 | 위치 |
+|------|------|------|
+| **ARGO_BRD_Final.md** | 비즈니스 요구사항 | `docs/` |
+| **ARGO_PRD_Final.md** | 제품 요구사항 | `docs/` |
+| **ARGO_TSD_Final.md** | 기술 명세서 (본 문서) | `docs/` |
+| **ARGO_API_COMPLETE_SPECIFICATION.md** | API 통합 명세 | `docs/` |
+| **ARGO_Final_Schema.md** | Neo4j 스키마 | `docs/` |
+
+### B.2 운영 문서 (Operations) - `docs/operations/`
+
+| 문서 | 역할 | 참조 위치 |
+|------|------|----------|
+| **ARGO_SRD_Final.md** | 소프트웨어 요구사항 | TSD 섹션 1-3 |
+| **ARGO_SERVICE_ACCOUNTS.md** | IAM 서비스 계정 정의 | TSD Appendix A |
+| **ARGO_GCP_INFRASTRUCTURE_SETUP.md** | GCP 인프라 설정 | TSD 섹션 5 |
+| **ARGO_NEO4J_MVP_DESIGN.md** | Neo4j MVP 설계 | TSD 섹션 2 |
+| **ARGO_DATA_COLLECTION_METHODOLOGY.md** | 데이터 수집 방법론 | TSD 섹션 2.1 |
+
+### B.3 연구 문서 (Research) - `docs/research/`
+
+| 문서 | 역할 | 참조 위치 |
+|------|------|----------|
+| **ARGO_WEIGHT_RESEARCH_FRAMEWORK.md** | 가중치 학술 근거 | TSD 섹션 2.1.1 (scores) |
+| **ARGO_STRUCTURALIST_ALGORITHM_DESIGN.md** | 구조주의 알고리즘 | TSD 섹션 3.3 |
+| **ARGO_METHODOLOGY.md** | 학술 방법론 | TSD 섹션 3.3 |
+| **ARGO_RISK_ANALYSIS_REPORT.md** | 리스크 분석 | TSD 섹션 9.3 |
+
+### B.4 개발 문서 (Development) - `docs/development/`
+
+| 문서 | 역할 | 참조 위치 |
+|------|------|----------|
+| **ARGO_ANTIGRAVITY_BACKEND_SPECIFICATION.md** | 백엔드 개발 명세 | TSD 섹션 3 |
+| **ARGO_DESIGN_DEVELOPMENT_SPEC.md** | 디자인 개발 명세 | TSD 섹션 4 |
+| **ARGO_API_SPECIFICATION.yaml** | OpenAPI 명세 | API_COMPLETE_SPECIFICATION |
+
+### B.5 참조 흐름도
+
+```
+BRD (비즈니스 목표)
+  ↓
+PRD (제품 기능)
+  ↓
+TSD (기술 구현) ←── Schema (데이터 구조)
+  ↓
+API Spec (인터페이스 정의)
+  ↓
+SRD (소프트웨어 명세)
+```
+
+---
+
 ## 구현 상태 (Implementation Status)
 
 **Last Updated**: 2025-12-08
