@@ -81,3 +81,5 @@ for prop, query in structural_checks.items():
 
 print("\n" + "=" * 60)
 
+
+

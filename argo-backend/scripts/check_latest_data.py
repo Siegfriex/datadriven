@@ -17,3 +17,5 @@ if latest:
         if artworks:
             print(f'첫 번째 작품 샘플: {artworks[0]}')
 
+
+

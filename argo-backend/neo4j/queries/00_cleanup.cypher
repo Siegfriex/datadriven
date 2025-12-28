@@ -39,3 +39,5 @@ MATCH (n)
 WHERE NOT (n)--()
 RETURN labels(n) as label, count(n) as isolated_count;
 
+
+

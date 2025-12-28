@@ -36,3 +36,5 @@
 - **Source**: Biennale API 응답 데이터
 - **Logic**: 작가명 정확히 일치 시 관계 생성
 
+
+
